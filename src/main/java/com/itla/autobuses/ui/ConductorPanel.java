@@ -45,7 +45,7 @@ public class ConductorPanel extends JPanel {
     private final JTextField txtApellido = Tema.campo("Apellido");
     private final JTextField txtTelefono = Tema.campo("809-000-0000");
     private final JTextField txtLicencia = Tema.campo("Numero de licencia");
-    private final JTextField txtVence = Tema.campo("aaaa-mm-dd");
+    private final CampoFechaHora txtVence = new CampoFechaHora(false);
     private final JCheckBox chkActivo = new JCheckBox("Activo", true);
 
     private JDialog dialogo;

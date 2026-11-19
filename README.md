@@ -26,6 +26,7 @@ El rediseno toma como referencia `Mockups_Interfaces_Control_Autobuses.pdf`:
 - Navegacion con `CardLayout`, sin recargar ventanas.
 - Tablas con filas alternas, orden por columnas, etiquetas de estado y buscador con placeholder.
 - Formularios modales unificados: nuevo registro, editar registro, crear usuario y cambiar contrasena.
+- Selector desplegable de fechas y horas con calendario y combos de hora/minuto en Asignaciones, Disponibilidad, Bitacora y vencimiento de licencia; no requiere escribir texto.
 - Inicio con tarjetas de indicadores, **Actividad reciente** desde la bitacora y **Alertas** desde licencias por vencer.
 - Paleta extraida de los mockups: fondo `#F4F6F4`, superficie `#FFFFFF`, verde oscuro `#113B2D`, verde principal `#0A6B4D`, acento `#16855D` y verde claro `#DBEFE4`.
 

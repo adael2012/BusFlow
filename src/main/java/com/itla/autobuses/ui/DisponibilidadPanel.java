@@ -23,8 +23,8 @@ public class DisponibilidadPanel extends JPanel {
     private final AsignacionService asignaciones = new AsignacionService();
     private final AutobusService autobuses = new AutobusService();
 
-    private final JTextField txtInicio = Tema.campo("aaaa-mm-dd HH:mm");
-    private final JTextField txtFin = Tema.campo("aaaa-mm-dd HH:mm");
+    private final CampoFechaHora txtInicio = new CampoFechaHora();
+    private final CampoFechaHora txtFin = new CampoFechaHora();
 
     private final DefaultTableModel modeloConductores = new DefaultTableModel(
             new String[]{"Id", "Cedula", "Conductor", "Licencia", "Vence"}, 0) {
@@ -52,9 +52,9 @@ public class DisponibilidadPanel extends JPanel {
         JButton btnLimpiar = Tema.botonSecundario("Limpiar");
         JPanel norte = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 4));
         norte.setBackground(Tema.FONDO);
-        norte.add(new JLabel("Inicio (aaaa-mm-dd HH:mm):"));
+        norte.add(new JLabel("Inicio:"));
         norte.add(txtInicio);
-        norte.add(new JLabel("Fin (aaaa-mm-dd HH:mm):"));
+        norte.add(new JLabel("Fin:"));
         norte.add(txtFin);
         norte.add(btnConsultar);
         norte.add(btnLimpiar);

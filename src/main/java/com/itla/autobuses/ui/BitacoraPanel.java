@@ -16,8 +16,8 @@ public class BitacoraPanel extends JPanel {
     private final BitacoraService servicio = new BitacoraService();
     private final JTextField txtUsuario = Tema.campo("Usuario");
     private final JTextField txtAccion = Tema.campo("Accion");
-    private final JTextField txtDesde = Tema.campo("aaaa-mm-dd");
-    private final JTextField txtHasta = Tema.campo("aaaa-mm-dd");
+    private final CampoFechaHora txtDesde = new CampoFechaHora(false);
+    private final CampoFechaHora txtHasta = new CampoFechaHora(false);
 
     private final DefaultTableModel modelo = new DefaultTableModel(
             new String[]{"Id", "Fecha", "Usuario", "Accion", "Tabla", "Id registro", "Detalle"}, 0) {

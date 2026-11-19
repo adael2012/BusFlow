@@ -422,6 +422,9 @@ public final class Tema {
     }
 
     public static void aplicar(Component c) {
+        if (c instanceof CampoFechaHora) {
+            return;
+        }
         if (c instanceof JButton b) {
             if (b.getFont() == null || !FAMILIA.equals(b.getFont().getFamily())) {
                 b.setFont(fuente(12));

@@ -56,8 +56,8 @@ public class AsignacionPanel extends JPanel {
     private final JComboBox<Conductor> cmbConductor = new JComboBox<>();
     private final JComboBox<Autobus> cmbAutobus = new JComboBox<>();
     private final JComboBox<Ruta> cmbRuta = new JComboBox<>();
-    private final JTextField txtInicio = Tema.campo("aaaa-mm-dd HH:mm");
-    private final JTextField txtFin = Tema.campo("aaaa-mm-dd HH:mm");
+    private final CampoFechaHora txtInicio = new CampoFechaHora();
+    private final CampoFechaHora txtFin = new CampoFechaHora();
     private final JComboBox<String> cmbEstado = new JComboBox<>(
             new String[]{Asignacion.PROGRAMADA, Asignacion.COMPLETADA});
 
