@@ -5,16 +5,20 @@ import com.itla.autobuses.util.Sesion;
 
 final class BitacoraHelper {
 
-    private static final BitacoraDAO DAO = new BitacoraDAO();
+    private static BitacoraDAO dao = new BitacoraDAO();
 
     private BitacoraHelper() { }
+
+    static void usar(BitacoraDAO nuevo) {
+        dao = nuevo;
+    }
 
     static void registrar(String accion, String tabla, int idRegistro, String detalle) {
         if (!Sesion.getInstancia().hayUsuario()) {
             return;
         }
         try {
-            DAO.insertar(Sesion.getInstancia().getUsuario().getId(),
+            dao.insertar(Sesion.getInstancia().getUsuario().getId(),
                     accion, tabla, idRegistro, detalle);
         } catch (Exception ignored) {
 

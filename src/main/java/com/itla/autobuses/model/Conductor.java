@@ -32,4 +32,9 @@ public class Conductor {
     public boolean licenciaVigente() {
         return vencimientoLicencia != null && !vencimientoLicencia.isBefore(LocalDate.now());
     }
+
+    @Override
+    public String toString() {
+        return nombre + " " + apellido + " - " + cedula;
+    }
 }

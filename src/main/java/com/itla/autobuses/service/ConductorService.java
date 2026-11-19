@@ -10,7 +10,15 @@ import java.util.List;
 
 public class ConductorService {
 
-    private final ConductorDAO dao = new ConductorDAO();
+    private final ConductorDAO dao;
+
+    public ConductorService() {
+        this(new ConductorDAO());
+    }
+
+    public ConductorService(ConductorDAO dao) {
+        this.dao = dao;
+    }
 
     public List<Conductor> listar() throws NegocioException {
         try {
@@ -33,6 +41,7 @@ public class ConductorService {
 
     public void guardar(Conductor k) throws NegocioException {
         exigirAdmin();
+        normalizar(k);
         validar(k);
         try {
             if (k.getId() == 0) {
@@ -73,14 +82,38 @@ public class ConductorService {
         if (!vacio(k.getTelefono()) && !k.getTelefono().matches("[0-9+\\-() ]{7,15}")) {
             throw new NegocioException("El telefono no tiene un formato valido.");
         }
-        if (vacio(k.getNumeroLicencia())) {
-            throw new NegocioException("El numero de licencia es obligatorio.");
+        if (vacio(k.getNumeroLicencia()) || !k.getNumeroLicencia().matches("[A-Za-z0-9-]{5,30}")) {
+            throw new NegocioException("El numero de licencia debe tener entre 5 y 30 caracteres.");
+        }
+        if (!vacio(k.getNombre()) && k.getNombre().length() > 60) {
+            throw new NegocioException("El nombre no puede superar 60 caracteres.");
+        }
+        if (!vacio(k.getApellido()) && k.getApellido().length() > 60) {
+            throw new NegocioException("El apellido no puede superar 60 caracteres.");
         }
         if (k.getVencimientoLicencia() == null) {
             throw new NegocioException("Indica la fecha de vencimiento de la licencia.");
         }
         if (k.isActivo() && !k.licenciaVigente()) {
             throw new NegocioException("La licencia esta vencida; no se puede dejar al conductor activo.");
+        }
+    }
+
+    private void normalizar(Conductor k) {
+        if (k.getCedula() != null) {
+            k.setCedula(k.getCedula().trim());
+        }
+        if (k.getNombre() != null) {
+            k.setNombre(k.getNombre().trim());
+        }
+        if (k.getApellido() != null) {
+            k.setApellido(k.getApellido().trim());
+        }
+        if (k.getTelefono() != null) {
+            k.setTelefono(k.getTelefono().trim());
+        }
+        if (k.getNumeroLicencia() != null) {
+            k.setNumeroLicencia(k.getNumeroLicencia().trim());
         }
     }
 
