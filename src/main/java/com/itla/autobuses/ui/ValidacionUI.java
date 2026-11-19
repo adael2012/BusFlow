@@ -15,7 +15,7 @@ public final class ValidacionUI {
             throw new NegocioException("Indica " + articulo + " " + nombre + ".");
         }
         if (!valor.matches("\\d+")) {
-            throw new NegocioException(mayuscula(nombre) + " debe ser un numero entero.");
+            throw new NegocioException(mayuscula(nombre) + " debe ser un número entero.");
         }
         try {
             return Integer.parseInt(valor);
@@ -30,12 +30,12 @@ public final class ValidacionUI {
             throw new NegocioException("Indica " + articulo + " " + nombre + ".");
         }
         if (!valor.matches("\\d+(\\.\\d{1,2})?")) {
-            throw new NegocioException(mayuscula(nombre) + " debe ser un numero decimal.");
+            throw new NegocioException(mayuscula(nombre) + " debe ser un número decimal.");
         }
         try {
             return new BigDecimal(valor);
         } catch (NumberFormatException e) {
-            throw new NegocioException(mayuscula(nombre) + " no es un numero valido.");
+            throw new NegocioException(mayuscula(nombre) + " no es un número válido.");
         }
     }
 

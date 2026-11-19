@@ -41,7 +41,7 @@ public class RutaPanel extends JPanel {
     private final JCheckBox chkActivo = new JCheckBox("Activa", true);
 
     private final DefaultTableModel modelo = new DefaultTableModel(
-            new String[]{"Id", "Codigo", "Origen", "Destino", "Distancia", "Duracion", "Estado"}, 0) {
+            new String[]{"Id", "Código", "Origen", "Destino", "Distancia", "Duración", "Estado"}, 0) {
         @Override public boolean isCellEditable(int r, int c) { return false; }
     };
     private final javax.swing.JTable tabla = Tema.tabla(modelo);
@@ -105,11 +105,11 @@ public class RutaPanel extends JPanel {
     private JDialog crearDialogo() {
         JPanel form = new JPanel(new GridLayout(6, 2, 10, 10));
         form.setBackground(Color.WHITE);
-        form.add(etiqueta("Codigo")); form.add(txtCodigo);
+        form.add(etiqueta("Código")); form.add(txtCodigo);
         form.add(etiqueta("Origen")); form.add(txtOrigen);
         form.add(etiqueta("Destino")); form.add(txtDestino);
         form.add(etiqueta("Distancia km")); form.add(txtDistancia);
-        form.add(etiqueta("Duracion min")); form.add(txtDuracion);
+        form.add(etiqueta("Duración min")); form.add(txtDuracion);
         form.add(etiqueta("Estado")); form.add(chkActivo);
         form.setBorder(BorderFactory.createEmptyBorder(4, 4, 10, 4));
 
@@ -184,7 +184,7 @@ public class RutaPanel extends JPanel {
             actual.setOrigen(txtOrigen.getText().trim());
             actual.setDestino(txtDestino.getText().trim());
             actual.setDistanciaKm(ValidacionUI.decimal(txtDistancia, "la", "distancia"));
-            actual.setDuracionMin(ValidacionUI.entero(txtDuracion, "la", "duracion"));
+            actual.setDuracionMin(ValidacionUI.entero(txtDuracion, "la", "duración"));
             actual.setActivo(chkActivo.isSelected());
             servicio.guardar(actual);
             dialogo.dispose();

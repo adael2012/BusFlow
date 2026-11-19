@@ -20,18 +20,18 @@ import java.awt.GridLayout;
 public class CambiarContrasenaDialog {
 
     private final JDialog dialogo;
-    private final javax.swing.JPasswordField txtActual = Tema.clave("Contrasena actual");
+    private final javax.swing.JPasswordField txtActual = Tema.clave("Contraseña actual");
     private final javax.swing.JPasswordField txtNueva = Tema.clave("Minimo 8 caracteres");
-    private final javax.swing.JPasswordField txtRepetir = Tema.clave("Repite la contrasena");
-    private final JCheckBox chkMostrar = new JCheckBox("Mostrar contrasenas");
+    private final javax.swing.JPasswordField txtRepetir = Tema.clave("Repite la contraseña");
+    private final JCheckBox chkMostrar = new JCheckBox("Mostrar contraseñas");
     private final UsuarioService servicio = new UsuarioService();
 
     public CambiarContrasenaDialog(Frame padre) {
         JPanel form = new JPanel(new GridLayout(4, 2, 10, 10));
         form.setBackground(Color.WHITE);
-        form.add(etiqueta("Contrasena actual"));
+        form.add(etiqueta("Contraseña actual"));
         form.add(txtActual);
-        form.add(etiqueta("Nueva contrasena"));
+        form.add(etiqueta("Nueva contraseña"));
         form.add(txtNueva);
         form.add(etiqueta("Repite la nueva"));
         form.add(txtRepetir);
@@ -56,8 +56,8 @@ public class CambiarContrasenaDialog {
 
         String usuario = Sesion.getInstancia().hayUsuario()
                 ? Sesion.getInstancia().getUsuario().getUsername() : "";
-        dialogo = Tema.dialogo(padre, "Cambiar contrasena",
-                "Actualiza la contrasena de " + usuario + ".", form,
+        dialogo = Tema.dialogo(padre, "Cambiar contraseña",
+                "Actualiza la contraseña de " + usuario + ".", form,
                 btnCancelar, btnGuardar);
         referencia[0] = dialogo;
     }
@@ -78,13 +78,13 @@ public class CambiarContrasenaDialog {
         String nueva = new String(txtNueva.getPassword());
         String repetir = new String(txtRepetir.getPassword());
         if (!nueva.equals(repetir)) {
-            JOptionPane.showMessageDialog(dialogo, "Las contrasenas nuevas no coinciden.",
+            JOptionPane.showMessageDialog(dialogo, "Las contraseñas nuevas no coinciden.",
                     "Aviso", JOptionPane.WARNING_MESSAGE);
             return;
         }
         try {
             servicio.cambiarPasswordPropio(actual, nueva);
-            JOptionPane.showMessageDialog(dialogo, "Contrasena cambiada correctamente.");
+            JOptionPane.showMessageDialog(dialogo, "Contraseña cambiada correctamente.");
             dialogo.dispose();
         } catch (NegocioException ex) {
             JOptionPane.showMessageDialog(dialogo, ex.getMessage(),

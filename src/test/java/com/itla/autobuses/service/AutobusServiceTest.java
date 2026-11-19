@@ -24,7 +24,7 @@ class AutobusServiceTest extends PruebaBase {
     }
 
     @Test
-    @DisplayName("UT-42 Valida la placa del autobus")
+    @DisplayName("UT-42 Valida la placa del autobús")
     void validaPlaca() throws Exception {
         iniciarComoAdmin();
         Autobus b = autobusValido();
@@ -33,12 +33,12 @@ class AutobusServiceTest extends PruebaBase {
     }
 
     @Test
-    @DisplayName("UT-43 Valida anio y capacidad")
+    @DisplayName("UT-43 Valida año y capacidad")
     void validaAnioYCapacidad() throws Exception {
         iniciarComoAdmin();
         Autobus b = autobusValido();
         b.setAnio(1800);
-        assertTrue(error(b).contains("anio"));
+        assertTrue(error(b).contains("año"));
 
         b.setAnio(2020);
         b.setCapacidad(0);
@@ -46,7 +46,7 @@ class AutobusServiceTest extends PruebaBase {
     }
 
     @Test
-    @DisplayName("UT-44 Guarda un autobus y registra la bitacora")
+    @DisplayName("UT-44 Guarda un autobús y registra la bitácora")
     void guardaYRegistra() throws Exception {
         iniciarComoAdmin();
         Autobus b = autobusValido();
@@ -55,7 +55,7 @@ class AutobusServiceTest extends PruebaBase {
 
         assertEquals(1, b.getId());
         assertEquals(1, servicio.listar().size());
-        assertTrue(bitacora.acciones.contains("CREAR:Autobus"));
+        assertTrue(bitacora.acciones.contains("CREAR:Autobús"));
     }
 
     @Test
@@ -87,6 +87,6 @@ class AutobusServiceTest extends PruebaBase {
         servicio.cambiarEstado(b, Autobus.MANTENIMIENTO);
 
         assertEquals(Autobus.MANTENIMIENTO, b.getEstado());
-        assertTrue(bitacora.acciones.contains("ESTADO:Autobus"));
+        assertTrue(bitacora.acciones.contains("ESTADO:Autobús"));
     }
 }

@@ -21,13 +21,15 @@ public class Main {
 
         SwingUtilities.invokeLater(() -> {
             try {
-                new UsuarioService().crearAdminInicialSiNoExiste();
+                UsuarioService usuarios = new UsuarioService();
+                usuarios.crearAdminInicialSiNoExiste();
+                usuarios.crearUsuarioNormalSiNoExiste();
             } catch (Exception e) {
                 JOptionPane.showMessageDialog(null,
                         "No se pudo conectar con la base de datos.\n"
-                                + "Configura db.properties junto al JAR o en la raiz del proyecto.\n"
+                                + "Configura db.properties junto al JAR o en la raíz del proyecto.\n"
                                 + e.getMessage(),
-                        "Error de conexion", JOptionPane.ERROR_MESSAGE);
+                        "Error de conexión", JOptionPane.ERROR_MESSAGE);
                 return;
             }
             new LoginFrame().setVisible(true);

@@ -117,13 +117,13 @@ public class UsuarioPanel extends JPanel {
         form.setBackground(Color.WHITE);
         form.add(etiqueta("Usuario"));
         form.add(txtUsername);
-        form.add(etiqueta("Contrasena"));
+        form.add(etiqueta("Contraseña"));
         form.add(txtClave);
         form.add(etiqueta("Rol"));
         form.add(cmbRol);
         form.setBorder(BorderFactory.createEmptyBorder(4, 4, 10, 4));
 
-        btnRestablecer = Tema.botonSecundario("Restablecer contrasena",
+        btnRestablecer = Tema.botonSecundario("Restablecer contraseña",
                 Iconos.de("llave", Tema.VERDE));
         btnRestablecer.addActionListener(e -> restablecer());
         btnDesactivar = Tema.botonPeligro("Desactivar", Iconos.de("alerta", Tema.ERROR));
@@ -222,14 +222,14 @@ public class UsuarioPanel extends JPanel {
         }
         javax.swing.JPasswordField campo = Tema.clave("Minimo 8 caracteres");
         int r = JOptionPane.showConfirmDialog(this, campo,
-                "Nueva contrasena para " + actual.getUsername(),
+                "Nueva contraseña para " + actual.getUsername(),
                 JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
         if (r != JOptionPane.OK_OPTION) {
             return;
         }
         try {
             servicio.restablecerPassword(actual, new String(campo.getPassword()));
-            JOptionPane.showMessageDialog(this, "Contrasena restablecida.");
+            JOptionPane.showMessageDialog(this, "Contraseña restablecida.");
         } catch (NegocioException ex) {
             aviso(ex.getMessage());
         }

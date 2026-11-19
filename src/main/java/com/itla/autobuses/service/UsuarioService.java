@@ -15,6 +15,8 @@ public class UsuarioService {
 
     public static final String ADMIN_INICIAL = "admin";
     public static final String CLAVE_INICIAL = "Admin123!";
+    public static final String USUARIO_NORMAL_INICIAL = "usuario";
+    public static final String CLAVE_NORMAL_INICIAL = "Usuario123!";
 
     private final UsuarioDAO usuarioDAO;
     private final RolDAO rolDAO;
@@ -40,6 +42,21 @@ public class UsuarioService {
             }
         }
         throw new SQLException("No existe el rol Administrador. Ejecuta database/script.sql.");
+    }
+
+    public void crearUsuarioNormalSiNoExiste() throws SQLException {
+        if (usuarioDAO.obtenerPorUsername(USUARIO_NORMAL_INICIAL) != null) {
+            return;
+        }
+        for (Rol r : rolDAO.listar()) {
+            if (Rol.USUARIO_GENERICO.equals(r.getNombre())
+                    || "Usuario Generico".equals(r.getNombre())) {
+                usuarioDAO.insertar(construir(
+                        USUARIO_NORMAL_INICIAL, CLAVE_NORMAL_INICIAL, r.getId()));
+                return;
+            }
+        }
+        throw new SQLException("No existe el rol Usuario Genérico. Ejecuta database/script.sql.");
     }
 
     public List<Rol> listarRoles() throws NegocioException {
@@ -113,15 +130,15 @@ public class UsuarioService {
     public void cambiarPasswordPropio(String actual, String nueva) throws NegocioException {
         Usuario yo = Sesion.getInstancia().getUsuario();
         if (yo == null) {
-            throw new NegocioException("No hay una sesion activa.");
+            throw new NegocioException("No hay una sesión activa.");
         }
         if (actual == null || actual.isBlank()
                 || !Seguridad.verificar(actual, yo.getSalt(), yo.getPasswordHash())) {
-            throw new NegocioException("La contrasena actual es incorrecta.");
+            throw new NegocioException("La contraseña actual es incorrecta.");
         }
         validarPassword(nueva);
         if (Seguridad.verificar(nueva, yo.getSalt(), yo.getPasswordHash())) {
-            throw new NegocioException("La nueva contrasena debe ser diferente a la actual.");
+            throw new NegocioException("La nueva contraseña debe ser diferente a la actual.");
         }
         String salt = Seguridad.generarSalt();
         String hash = Seguridad.hash(nueva, salt);
@@ -160,13 +177,13 @@ public class UsuarioService {
     private void validarUsername(String username) throws NegocioException {
         if (username == null || !username.trim().matches("[A-Za-z0-9_]{3,30}")) {
             throw new NegocioException(
-                    "El usuario debe tener entre 3 y 30 caracteres (letras, numeros o guion bajo).");
+                    "El usuario debe tener entre 3 y 30 caracteres (letras, números o guion bajo).");
         }
     }
 
     private void validarRol(int idRol) throws NegocioException {
         if (idRol <= 0) {
-            throw new NegocioException("Selecciona un rol valido.");
+            throw new NegocioException("Selecciona un rol válido.");
         }
         try {
             for (Rol r : rolDAO.listar()) {
@@ -197,13 +214,13 @@ public class UsuarioService {
         if (password == null || password.length() < 8 || password.length() > 64
                 || !password.matches(".*[A-Z].*") || !password.matches(".*\\d.*")) {
             throw new NegocioException(
-                    "La contrasena debe tener al menos 8 caracteres, una mayuscula y un numero.");
+                    "La contraseña debe tener al menos 8 caracteres, una mayúscula y un número.");
         }
     }
 
     private void exigirAdmin() throws NegocioException {
         if (!Sesion.getInstancia().esAdmin()) {
-            throw new NegocioException("Solo el Administrador puede realizar esta accion.");
+            throw new NegocioException("Solo el Administrador puede realizar esta acción.");
         }
     }
 

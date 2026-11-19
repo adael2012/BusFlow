@@ -1,4 +1,4 @@
-IF DB_ID('ControlAutobuses') IS NULL
+﻿IF DB_ID('ControlAutobuses') IS NULL
     CREATE DATABASE ControlAutobuses;
 GO
 USE ControlAutobuses;
@@ -84,8 +84,11 @@ GO
 
 IF NOT EXISTS (SELECT 1 FROM dbo.Rol WHERE Nombre = N'Administrador')
     INSERT INTO dbo.Rol (Nombre) VALUES (N'Administrador');
-IF NOT EXISTS (SELECT 1 FROM dbo.Rol WHERE Nombre = N'Usuario Generico')
-    INSERT INTO dbo.Rol (Nombre) VALUES (N'Usuario Generico');
+IF NOT EXISTS (SELECT 1 FROM dbo.Rol WHERE Nombre = N'Usuario Genérico')
+    INSERT INTO dbo.Rol (Nombre) VALUES (N'Usuario Genérico');
+IF EXISTS (SELECT 1 FROM dbo.Rol WHERE Nombre = N'Usuario Generico')
+   AND NOT EXISTS (SELECT 1 FROM dbo.Rol WHERE Nombre = N'Usuario Genérico')
+    UPDATE dbo.Rol SET Nombre = N'Usuario Genérico' WHERE Nombre = N'Usuario Generico';
 GO
 
 CREATE OR ALTER PROCEDURE dbo.sp_Rol_Listar

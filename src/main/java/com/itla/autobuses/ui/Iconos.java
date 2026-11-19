@@ -75,7 +75,7 @@ public final class Iconos {
                 g.fillOval(6, 4, 4, 4);
                 g.drawArc(4, 9, 8, 6, 180, 180);
             }
-            case "bitacora" -> {
+            case "bitácora" -> {
                 g.drawRoundRect(3, 1, 10, 14, 2, 2);
                 g.drawLine(5, 5, 11, 5);
                 g.drawLine(5, 8, 11, 8);

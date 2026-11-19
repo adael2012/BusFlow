@@ -35,7 +35,7 @@ public class ConductorPanel extends JPanel {
 
     private final JTextField txtBuscar = Tema.campo("Escribe para buscar");
     private final DefaultTableModel modelo = new DefaultTableModel(
-            new String[]{"Id", "Cedula", "Nombre", "Apellido", "Telefono", "Licencia", "Vence", "Estado"}, 0) {
+            new String[]{"Id", "Cédula", "Nombre", "Apellido", "Teléfono", "Licencia", "Vence", "Estado"}, 0) {
         @Override public boolean isCellEditable(int r, int c) { return false; }
     };
     private final javax.swing.JTable tabla = Tema.tabla(modelo);
@@ -44,7 +44,7 @@ public class ConductorPanel extends JPanel {
     private final JTextField txtNombre = Tema.campo("Nombre");
     private final JTextField txtApellido = Tema.campo("Apellido");
     private final JTextField txtTelefono = Tema.campo("809-000-0000");
-    private final JTextField txtLicencia = Tema.campo("Numero de licencia");
+    private final JTextField txtLicencia = Tema.campo("Número de licencia");
     private final CampoFechaHora txtVence = new CampoFechaHora(false);
     private final JCheckBox chkActivo = new JCheckBox("Activo", true);
 
@@ -107,10 +107,10 @@ public class ConductorPanel extends JPanel {
     private JDialog crearDialogo() {
         JPanel form = new JPanel(new GridLayout(7, 2, 10, 10));
         form.setBackground(java.awt.Color.WHITE);
-        form.add(etiqueta("Cedula")); form.add(txtCedula);
+        form.add(etiqueta("Cédula")); form.add(txtCedula);
         form.add(etiqueta("Nombre")); form.add(txtNombre);
         form.add(etiqueta("Apellido")); form.add(txtApellido);
-        form.add(etiqueta("Telefono")); form.add(txtTelefono);
+        form.add(etiqueta("Teléfono")); form.add(txtTelefono);
         form.add(etiqueta("Licencia")); form.add(txtLicencia);
         form.add(etiqueta("Vencimiento")); form.add(txtVence);
         form.add(etiqueta("Estado")); form.add(chkActivo);

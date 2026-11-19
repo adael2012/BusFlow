@@ -17,21 +17,21 @@ class ConductorServiceTest extends PruebaBase {
     }
 
     @Test
-    @DisplayName("UT-14 Rechaza cedula que no tiene 11 digitos")
+    @DisplayName("UT-14 Rechaza cédula que no tiene 11 dígitos")
     void rechazaCedulaCorta() throws Exception {
         iniciarComoAdmin();
         Conductor k = conductorValido();
         k.setCedula("12345");
-        assertTrue(error(k).contains("11 digitos"));
+        assertTrue(error(k).contains("11 dígitos"));
     }
 
     @Test
-    @DisplayName("UT-15 Rechaza cedula con letras o guiones")
+    @DisplayName("UT-15 Rechaza cédula con letras o guiones")
     void rechazaCedulaConGuiones() throws Exception {
         iniciarComoAdmin();
         Conductor k = conductorValido();
         k.setCedula("001-1234567-8");
-        assertTrue(error(k).contains("11 digitos"));
+        assertTrue(error(k).contains("11 dígitos"));
     }
 
     @Test
@@ -44,12 +44,12 @@ class ConductorServiceTest extends PruebaBase {
     }
 
     @Test
-    @DisplayName("UT-17 Rechaza telefono con formato invalido")
+    @DisplayName("UT-17 Rechaza teléfono con formato inválido")
     void rechazaTelefonoInvalido() throws Exception {
         iniciarComoAdmin();
         Conductor k = conductorValido();
         k.setTelefono("abc");
-        assertTrue(error(k).contains("telefono"));
+        assertTrue(error(k).contains("teléfono"));
     }
 
     @Test
@@ -91,14 +91,14 @@ class ConductorServiceTest extends PruebaBase {
     }
 
     @Test
-    @DisplayName("UT-22 Usuario generico no puede guardar conductores")
+    @DisplayName("UT-22 Usuario genérico no puede guardar conductores")
     void genericoNoPuedeGuardar() throws Exception {
         iniciarComoGenerico();
         assertTrue(error(conductorValido()).contains("Administrador"));
     }
 
     @Test
-    @DisplayName("UT-23 Cedula repetida devuelve mensaje amigable")
+    @DisplayName("UT-23 Cédula repetida devuelve mensaje amigable")
     void cedulaDuplicada() throws Exception {
         iniciarComoAdmin();
         conductores.guardar(conductorValido());

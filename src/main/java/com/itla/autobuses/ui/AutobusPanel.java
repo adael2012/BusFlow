@@ -33,7 +33,7 @@ public class AutobusPanel extends JPanel {
 
     private final JTextField txtBuscar = Tema.campo("Escribe para buscar");
     private final DefaultTableModel modelo = new DefaultTableModel(
-            new String[]{"Id", "Placa", "Marca", "Modelo", "Anio", "Capacidad", "Estado"}, 0) {
+            new String[]{"Id", "Placa", "Marca", "Modelo", "Año", "Capacidad", "Estado"}, 0) {
         @Override public boolean isCellEditable(int r, int c) { return false; }
     };
     private final javax.swing.JTable tabla = Tema.tabla(modelo);
@@ -111,7 +111,7 @@ public class AutobusPanel extends JPanel {
         form.add(etiqueta("Placa")); form.add(txtPlaca);
         form.add(etiqueta("Marca")); form.add(txtMarca);
         form.add(etiqueta("Modelo")); form.add(txtModelo);
-        form.add(etiqueta("Anio")); form.add(txtAnio);
+        form.add(etiqueta("Año")); form.add(txtAnio);
         form.add(etiqueta("Capacidad")); form.add(txtCapacidad);
         form.add(etiqueta("Estado")); form.add(cmbEstado);
         form.setBorder(BorderFactory.createEmptyBorder(4, 4, 10, 4));
@@ -127,7 +127,7 @@ public class AutobusPanel extends JPanel {
 
         Frame padre = (Frame) SwingUtilities.getWindowAncestor(this);
         return Tema.dialogo(padre, "Nuevo registro",
-                "Complete los datos del autobus.", form,
+                "Complete los datos del autobús.", form,
                 btnMantenimiento, btnBaja, btnCancelar, btnGuardar);
     }
 
@@ -188,7 +188,7 @@ public class AutobusPanel extends JPanel {
             actual.setPlaca(txtPlaca.getText().trim());
             actual.setMarca(txtMarca.getText().trim());
             actual.setModelo(txtModelo.getText().trim());
-            actual.setAnio(ValidacionUI.entero(txtAnio, "el", "anio"));
+            actual.setAnio(ValidacionUI.entero(txtAnio, "el", "año"));
             actual.setCapacidad(ValidacionUI.entero(txtCapacidad, "la", "capacidad"));
             actual.setEstado((String) cmbEstado.getSelectedItem());
             servicio.guardar(actual);
@@ -201,7 +201,7 @@ public class AutobusPanel extends JPanel {
 
     private void cambiarEstado(String estado) {
         if (actual.getId() == 0) {
-            aviso("Selecciona un autobus de la tabla.");
+            aviso("Selecciona un autobús de la tabla.");
             return;
         }
         try {

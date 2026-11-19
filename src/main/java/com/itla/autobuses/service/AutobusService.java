@@ -65,14 +65,14 @@ public class AutobusService {
             if (a.getId() == 0) {
                 int id = dao.insertar(a);
                 a.setId(id);
-                BitacoraHelper.registrar("CREAR", "Autobus", id, a.getPlaca());
+                BitacoraHelper.registrar("CREAR", "Autobús", id, a.getPlaca());
             } else {
                 dao.actualizar(a);
-                BitacoraHelper.registrar("ACTUALIZAR", "Autobus", a.getId(), a.getPlaca());
+                BitacoraHelper.registrar("ACTUALIZAR", "Autobús", a.getId(), a.getPlaca());
             }
         } catch (SQLException e) {
             if (UsuarioService.esDuplicado(e)) {
-                throw new NegocioException("Ya existe un autobus con esa placa.");
+                throw new NegocioException("Ya existe un autobús con esa placa.");
             }
             throw UsuarioService.errorBD(e);
         }
@@ -81,12 +81,12 @@ public class AutobusService {
     public void cambiarEstado(Autobus a, String estado) throws NegocioException {
         exigirAdmin();
         if (!estadosPermitidos().contains(estado)) {
-            throw new NegocioException("Estado no valido.");
+            throw new NegocioException("Estado no válido.");
         }
         try {
             dao.cambiarEstado(a.getId(), estado);
             a.setEstado(estado);
-            BitacoraHelper.registrar("ESTADO", "Autobus", a.getId(), a.getPlaca() + " -> " + estado);
+            BitacoraHelper.registrar("ESTADO", "Autobús", a.getId(), a.getPlaca() + " -> " + estado);
         } catch (SQLException e) {
             throw UsuarioService.errorBD(e);
         }
@@ -104,13 +104,13 @@ public class AutobusService {
         }
         int anioActual = java.time.LocalDate.now().getYear();
         if (a.getAnio() < 1990 || a.getAnio() > anioActual + 1) {
-            throw new NegocioException("El anio debe estar entre 1990 y " + (anioActual + 1) + ".");
+            throw new NegocioException("El año debe estar entre 1990 y " + (anioActual + 1) + ".");
         }
         if (a.getCapacidad() <= 0 || a.getCapacidad() > 200) {
             throw new NegocioException("La capacidad debe estar entre 1 y 200 pasajeros.");
         }
         if (!estadosPermitidos().contains(a.getEstado())) {
-            throw new NegocioException("Estado no valido.");
+            throw new NegocioException("Estado no válido.");
         }
     }
 
@@ -145,7 +145,7 @@ public class AutobusService {
 
     private void exigirAdmin() throws NegocioException {
         if (!Sesion.getInstancia().esAdmin()) {
-            throw new NegocioException("Solo el Administrador puede realizar esta accion.");
+            throw new NegocioException("Solo el Administrador puede realizar esta acción.");
         }
     }
 }

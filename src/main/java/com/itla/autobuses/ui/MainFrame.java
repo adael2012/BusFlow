@@ -51,7 +51,9 @@ public class MainFrame extends JFrame {
         raiz.add(area, BorderLayout.CENTER);
         setContentPane(raiz);
 
-        mostrar("inicio", "Panel de administracion", menu.get(0));
+        String tituloInicial = u.esAdmin()
+                ? "Panel de administración" : "Panel de consulta";
+        mostrar("inicio", tituloInicial, menu.get(0));
         setSize(1180, 760);
         setMinimumSize(new Dimension(1024, 680));
         setLocationRelativeTo(null);
@@ -104,19 +106,19 @@ public class MainFrame extends JFrame {
         nav.setOpaque(false);
 
         seccion(nav, "GENERAL");
-        agregarItem(nav, "inicio", "Inicio", "inicio", "Panel de administracion");
+        agregarItem(nav, "inicio", "Inicio", "inicio", "Panel de administración");
         agregarItem(nav, "conductores", "Conductores", "conductores", "Administra y consulta los registros del sistema");
         agregarItem(nav, "autobuses", "Autobuses", "autobuses", "Administra y consulta la flota de unidades");
         agregarItem(nav, "rutas", "Rutas", "rutas", "Administra y consulta los recorridos");
 
-        seccion(nav, "OPERACION");
+        seccion(nav, "OPERACIÓN");
         agregarItem(nav, "asignaciones", "Asignaciones", "asignaciones", "Programa viajes y controla la disponibilidad");
         agregarItem(nav, "disponibilidad", "Disponibilidad", "disponibilidad", "Consulta los recursos libres por periodo");
 
         if (u.esAdmin()) {
             seccion(nav, "SISTEMA");
             agregarItem(nav, "usuarios", "Usuarios", "usuarios", "Administra cuentas, roles y acceso");
-            agregarItem(nav, "bitacora", "Bitacora", "bitacora", "Consulta el historial de acciones registradas");
+            agregarItem(nav, "bitácora", "Bitácora", "bitácora", "Consulta el historial de acciónes registradas");
         }
 
         JPanel perfil = new JPanel(new java.awt.BorderLayout(10, 0));
@@ -204,7 +206,7 @@ public class MainFrame extends JFrame {
     }
 
     private JPanel crearBarraSuperior(Usuario u) {
-        tituloSeccion = new JLabel("Panel de administracion");
+        tituloSeccion = new JLabel("Panel de administración");
         tituloSeccion.setFont(Tema.fuente(16, Font.BOLD));
         tituloSeccion.setForeground(Tema.TEXTO);
 
@@ -214,16 +216,16 @@ public class MainFrame extends JFrame {
         } catch (RuntimeException ex) {
             conectado = false;
         }
-        JLabel estado = Tema.chip(conectado ? "Sistema activo" : "Sin conexion",
+        JLabel estado = Tema.chip(conectado ? "Sistema activo" : "Sin conexión",
                 conectado ? Tema.EXITO : Tema.ERROR);
 
-        JButton btnClave = Tema.botonPlano("Cambiar contrasena");
+        JButton btnClave = Tema.botonPlano("Cambiar contraseña");
         btnClave.setIcon(Iconos.de("llave", Tema.VERDE));
         btnClave.setIconTextGap(6);
         btnClave.setForeground(Tema.VERDE);
         btnClave.addActionListener(e -> new CambiarContrasenaDialog(this).setVisible(true));
 
-        JButton btnSalir = Tema.botonPlano("Cerrar sesion");
+        JButton btnSalir = Tema.botonPlano("Cerrar sesión");
         btnSalir.setIcon(Iconos.de("salir", Tema.ERROR));
         btnSalir.setIconTextGap(6);
         btnSalir.setForeground(Tema.ERROR);
@@ -276,7 +278,7 @@ public class MainFrame extends JFrame {
             case "asignaciones" -> new AsignacionPanel();
             case "disponibilidad" -> new DisponibilidadPanel();
             case "usuarios" -> new UsuarioPanel();
-            case "bitacora" -> new BitacoraPanel();
+            case "bitácora" -> new BitacoraPanel();
             default -> new InicioPanel();
         };
     }

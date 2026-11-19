@@ -18,11 +18,11 @@ class ModeloTest {
     }
 
     @Test
-    @DisplayName("UT-10 Usuario generico o sin rol no es admin")
+    @DisplayName("UT-10 Usuario genérico o sin rol no es admin")
     void usuarioGenericoNoEsAdmin() {
         Usuario u = new Usuario();
         assertFalse(u.esAdmin());
-        u.setRolNombre("Usuario Generico");
+        u.setRolNombre("Usuario Genérico");
         assertFalse(u.esAdmin());
     }
 

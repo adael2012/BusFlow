@@ -18,7 +18,7 @@ class BloqueoLoginTest extends PruebaBase {
             final String incorrecta = "ClaveMala" + i;
             NegocioException ex = assertThrows(NegocioException.class,
                     () -> auth.login("admin", incorrecta));
-            assertEquals("Usuario o contrasena incorrectos.", ex.getMessage());
+            assertEquals("Usuario o contraseña incorrectos.", ex.getMessage());
         }
         NegocioException tercero = assertThrows(NegocioException.class,
                 () -> auth.login("admin", "ClaveMala3"));

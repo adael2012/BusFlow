@@ -27,7 +27,7 @@ public class DisponibilidadPanel extends JPanel {
     private final CampoFechaHora txtFin = new CampoFechaHora();
 
     private final DefaultTableModel modeloConductores = new DefaultTableModel(
-            new String[]{"Id", "Cedula", "Conductor", "Licencia", "Vence"}, 0) {
+            new String[]{"Id", "Cédula", "Conductor", "Licencia", "Vence"}, 0) {
         @Override public boolean isCellEditable(int r, int c) { return false; }
     };
     private final DefaultTableModel modeloAutobuses = new DefaultTableModel(
@@ -35,7 +35,7 @@ public class DisponibilidadPanel extends JPanel {
         @Override public boolean isCellEditable(int r, int c) { return false; }
     };
     private final DefaultTableModel modeloAsignaciones = new DefaultTableModel(
-            new String[]{"Id", "Conductor", "Autobus", "Ruta", "Inicio", "Fin", "Estado"}, 0) {
+            new String[]{"Id", "Conductor", "Autobús", "Ruta", "Inicio", "Fin", "Estado"}, 0) {
         @Override public boolean isCellEditable(int r, int c) { return false; }
     };
 

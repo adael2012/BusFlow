@@ -33,6 +33,7 @@ import java.awt.FontMetrics;
 import java.awt.Frame;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.GraphicsEnvironment;
 import java.awt.Insets;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
@@ -58,10 +59,26 @@ public final class Tema {
     public static final Color VERDE_CLARO = new Color(182, 219, 202);
     public static final Color MENU_TEXTO = new Color(210, 225, 218);
 
-    private static final String FAMILIA = "Inter";
-    private static final String RESPALDO = "Segoe UI";
+    private static final String[] CANDIDATAS = {
+            "Segoe UI Variable Text", "Segoe UI Variable", "Inter",
+            "Aptos", "Segoe UI", "Trebuchet MS", "Dialog"
+    };
+    private static final String FAMILIA = resolverFamilia();
 
     private Tema() { }
+
+    private static String resolverFamilia() {
+        String[] instaladas = GraphicsEnvironment.getLocalGraphicsEnvironment()
+                .getAvailableFontFamilyNames();
+        for (String candidata : CANDIDATAS) {
+            for (String instalada : instaladas) {
+                if (candidata.equalsIgnoreCase(instalada)) {
+                    return instalada;
+                }
+            }
+        }
+        return "Dialog";
+    }
 
     public static Font fuente(int tamano) {
         return new Font(FAMILIA, Font.PLAIN, tamano);

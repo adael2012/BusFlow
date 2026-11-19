@@ -1,74 +1,77 @@
-<testsuite name="JUnit Jupiter" tests="72" skipped="0" failures="0" errors="0" time="3.713" timestamp="2026-11-18T21:14:34">
-  <testcase name="usuarioGenericoNoEsAdmin" classname="com.itla.autobuses.model.ModeloTest" time="0.035" />
-  <testcase name="usuarioAdministradorEsAdmin" classname="com.itla.autobuses.model.ModeloTest" time="0.001" />
-  <testcase name="licenciaSinFechaNoEsVigente" classname="com.itla.autobuses.model.ModeloTest" time="0.0" />
+<testsuite name="JUnit Jupiter" tests="75" skipped="0" failures="0" errors="0" time="3.707" timestamp="">
+  <testcase name="licenciaQueVenceHoyEsVigente" classname="com.itla.autobuses.model.ModeloTest" time="0.001" />
+  <testcase name="licenciaSinFechaNoEsVigente" classname="com.itla.autobuses.model.ModeloTest" time="0.001" />
   <testcase name="licenciaVencidaNoEsVigente" classname="com.itla.autobuses.model.ModeloTest" time="0.006" />
-  <testcase name="licenciaQueVenceHoyEsVigente" classname="com.itla.autobuses.model.ModeloTest" time="0.0" />
-  <testcase name="rechazaSolapeDeConductor" classname="com.itla.autobuses.service.AsignacionServiceTest" time="0.227" />
-  <testcase name="rechazaLicenciaVencida" classname="com.itla.autobuses.service.AsignacionServiceTest" time="0.084" />
-  <testcase name="rechazaSolapeDeAutobus" classname="com.itla.autobuses.service.AsignacionServiceTest" time="0.048" />
-  <testcase name="calculaDisponibilidad" classname="com.itla.autobuses.service.AsignacionServiceTest" time="0.046" />
-  <testcase name="cancela" classname="com.itla.autobuses.service.AsignacionServiceTest" time="0.046" />
+  <testcase name="usuarioAdministradorEsAdmin" classname="com.itla.autobuses.model.ModeloTest" time="0.001" />
+  <testcase name="usuarioGenericoNoEsAdmin" classname="com.itla.autobuses.model.ModeloTest" time="0.032" />
+  <testcase name="calculaDisponibilidad" classname="com.itla.autobuses.service.AsignacionServiceTest" time="0.042" />
+  <testcase name="cancela" classname="com.itla.autobuses.service.AsignacionServiceTest" time="0.041" />
+  <testcase name="exigeAdmin" classname="com.itla.autobuses.service.AsignacionServiceTest" time="0.001" />
   <testcase name="guardaYRegistra" classname="com.itla.autobuses.service.AsignacionServiceTest" time="0.043" />
-  <testcase name="exigeAdmin" classname="com.itla.autobuses.service.AsignacionServiceTest" time="0.002" />
-  <testcase name="validaPlaca" classname="com.itla.autobuses.service.AutobusServiceTest" time="0.044" />
-  <testcase name="rechazaPlacaRepetida" classname="com.itla.autobuses.service.AutobusServiceTest" time="0.045" />
+  <testcase name="rechazaLicenciaVencida" classname="com.itla.autobuses.service.AsignacionServiceTest" time="0.084" />
+  <testcase name="rechazaSolapeDeAutobus" classname="com.itla.autobuses.service.AsignacionServiceTest" time="0.045" />
+  <testcase name="rechazaSolapeDeConductor" classname="com.itla.autobuses.service.AsignacionServiceTest" time="0.2" />
   <testcase name="cambiaEstado" classname="com.itla.autobuses.service.AutobusServiceTest" time="0.045" />
-  <testcase name="guardaYRegistra" classname="com.itla.autobuses.service.AutobusServiceTest" time="0.044" />
-  <testcase name="validaAnioYCapacidad" classname="com.itla.autobuses.service.AutobusServiceTest" time="0.046" />
   <testcase name="exigeAdmin" classname="com.itla.autobuses.service.AutobusServiceTest" time="0.001" />
-  <testcase name="loginCorrectoReiniciaIntentos" classname="com.itla.autobuses.service.BloqueoLoginTest" time="0.153" />
+  <testcase name="guardaYRegistra" classname="com.itla.autobuses.service.AutobusServiceTest" time="0.043" />
+  <testcase name="rechazaPlacaRepetida" classname="com.itla.autobuses.service.AutobusServiceTest" time="0.044" />
+  <testcase name="validaAnioYCapacidad" classname="com.itla.autobuses.service.AutobusServiceTest" time="0.047" />
+  <testcase name="validaPlaca" classname="com.itla.autobuses.service.AutobusServiceTest" time="0.048" />
   <testcase name="bloqueaDespuesDeTresIntentos" classname="com.itla.autobuses.service.BloqueoLoginTest" time="0.089" />
-  <testcase name="genericoCambiaSuContrasena" classname="com.itla.autobuses.service.CambiarPasswordPropioTest" time="0.174" />
-  <testcase name="administradorCambiaSuContrasena" classname="com.itla.autobuses.service.CambiarPasswordPropioTest" time="0.128" />
-  <testcase name="rechazaContrasenaActualIncorrecta" classname="com.itla.autobuses.service.CambiarPasswordPropioTest" time="0.063" />
-  <testcase name="permiteInactivoConLicenciaVencida" classname="com.itla.autobuses.service.ConductorServiceTest" time="0.044" />
+  <testcase name="loginCorrectoReiniciaIntentos" classname="com.itla.autobuses.service.BloqueoLoginTest" time="0.15" />
+  <testcase name="administradorCambiaSuContrasena" classname="com.itla.autobuses.service.CambiarPasswordPropioTest" time="0.127" />
+  <testcase name="genericoCambiaSuContrasena" classname="com.itla.autobuses.service.CambiarPasswordPropioTest" time="0.17" />
+  <testcase name="rechazaContrasenaActualIncorrecta" classname="com.itla.autobuses.service.CambiarPasswordPropioTest" time="0.061" />
   <testcase name="cedulaDuplicada" classname="com.itla.autobuses.service.ConductorServiceTest" time="0.042" />
-  <testcase name="rechazaNombreVacio" classname="com.itla.autobuses.service.ConductorServiceTest" time="0.043" />
-  <testcase name="rechazaActivoConLicenciaVencida" classname="com.itla.autobuses.service.ConductorServiceTest" time="0.045" />
+  <testcase name="genericoNoPuedeGuardar" classname="com.itla.autobuses.service.ConductorServiceTest" time="0.083" />
+  <testcase name="permiteInactivoConLicenciaVencida" classname="com.itla.autobuses.service.ConductorServiceTest" time="0.042" />
+  <testcase name="rechazaActivoConLicenciaVencida" classname="com.itla.autobuses.service.ConductorServiceTest" time="0.043" />
   <testcase name="rechazaCedulaConGuiones" classname="com.itla.autobuses.service.ConductorServiceTest" time="0.042" />
-  <testcase name="rechazaCedulaCorta" classname="com.itla.autobuses.service.ConductorServiceTest" time="0.044" />
-  <testcase name="genericoNoPuedeGuardar" classname="com.itla.autobuses.service.ConductorServiceTest" time="0.087" />
-  <testcase name="rechazaLicenciaVacia" classname="com.itla.autobuses.service.ConductorServiceTest" time="0.042" />
-  <testcase name="rechazaTelefonoInvalido" classname="com.itla.autobuses.service.ConductorServiceTest" time="0.043" />
-  <testcase name="rechazaFechaNula" classname="com.itla.autobuses.service.ConductorServiceTest" time="0.044" />
-  <testcase name="primerArranqueYLogin" classname="com.itla.autobuses.service.FlujosIntegracionTest" time="0.043" />
-  <testcase name="permisosPorRol" classname="com.itla.autobuses.service.FlujosIntegracionTest" time="0.083" />
-  <testcase name="cerrarSesionBloqueaOperaciones" classname="com.itla.autobuses.service.FlujosIntegracionTest" time="0.043" />
-  <testcase name="restablecerPassword" classname="com.itla.autobuses.service.FlujosIntegracionTest" time="0.127" />
-  <testcase name="cicloCompletoConductor" classname="com.itla.autobuses.service.FlujosIntegracionTest" time="0.043" />
-  <testcase name="noPuedeDesactivarseASiMismo" classname="com.itla.autobuses.service.FlujosIntegracionTest" time="0.043" />
-  <testcase name="loginRechazado" classname="com.itla.autobuses.service.FlujosIntegracionTest" time="0.133" />
+  <testcase name="rechazaCedulaCorta" classname="com.itla.autobuses.service.ConductorServiceTest" time="0.043" />
+  <testcase name="rechazaFechaNula" classname="com.itla.autobuses.service.ConductorServiceTest" time="0.042" />
+  <testcase name="rechazaLicenciaVacia" classname="com.itla.autobuses.service.ConductorServiceTest" time="0.041" />
+  <testcase name="rechazaNombreVacio" classname="com.itla.autobuses.service.ConductorServiceTest" time="0.041" />
+  <testcase name="rechazaTelefonoInvalido" classname="com.itla.autobuses.service.ConductorServiceTest" time="0.042" />
+  <testcase name="cerrarSesionBloqueaOperaciones" classname="com.itla.autobuses.service.FlujosIntegracionTest" time="0.042" />
+  <testcase name="cicloCompletoConductor" classname="com.itla.autobuses.service.FlujosIntegracionTest" time="0.042" />
+  <testcase name="loginRechazado" classname="com.itla.autobuses.service.FlujosIntegracionTest" time="0.126" />
+  <testcase name="noPuedeDesactivarseASiMismo" classname="com.itla.autobuses.service.FlujosIntegracionTest" time="0.042" />
+  <testcase name="permisosPorRol" classname="com.itla.autobuses.service.FlujosIntegracionTest" time="0.088" />
+  <testcase name="primerArranqueYLogin" classname="com.itla.autobuses.service.FlujosIntegracionTest" time="0.042" />
+  <testcase name="restablecerPassword" classname="com.itla.autobuses.service.FlujosIntegracionTest" time="0.124" />
   <testcase name="alertaLicencias" classname="com.itla.autobuses.service.PanelServiceTest" time="0.0" />
-  <testcase name="resumen" classname="com.itla.autobuses.service.PanelServiceTest" time="0.002" />
-  <testcase name="rechazaCodigoRepetido" classname="com.itla.autobuses.service.RutaServiceTest" time="0.052" />
-  <testcase name="validaDistanciaYDuracion" classname="com.itla.autobuses.service.RutaServiceTest" time="0.048" />
-  <testcase name="validaCodigo" classname="com.itla.autobuses.service.RutaServiceTest" time="0.045" />
-  <testcase name="guardaYRegistra" classname="com.itla.autobuses.service.RutaServiceTest" time="0.044" />
-  <testcase name="desactiva" classname="com.itla.autobuses.service.RutaServiceTest" time="0.042" />
+  <testcase name="resumen" classname="com.itla.autobuses.service.PanelServiceTest" time="0.001" />
+  <testcase name="aceptaRolAnterior" classname="com.itla.autobuses.service.PerfilUsuarioNormalTest" time="0.02" />
+  <testcase name="crearPerfilNormal" classname="com.itla.autobuses.service.PerfilUsuarioNormalTest" time="0.062" />
+  <testcase name="perfilNormalSoloConsulta" classname="com.itla.autobuses.service.PerfilUsuarioNormalTest" time="0.062" />
+  <testcase name="desactiva" classname="com.itla.autobuses.service.RutaServiceTest" time="0.043" />
   <testcase name="exigeAdmin" classname="com.itla.autobuses.service.RutaServiceTest" time="0.0" />
-  <testcase name="rechazaClaveCorta" classname="com.itla.autobuses.service.UsuarioServiceTest" time="0.045" />
-  <testcase name="claveSeGuardaConHash" classname="com.itla.autobuses.service.UsuarioServiceTest" time="0.069" />
-  <testcase name="rechazaUsuarioCorto" classname="com.itla.autobuses.service.UsuarioServiceTest" time="0.043" />
-  <testcase name="genericoNoPuedeCrear" classname="com.itla.autobuses.service.UsuarioServiceTest" time="0.086" />
-  <testcase name="usuarioDuplicado" classname="com.itla.autobuses.service.UsuarioServiceTest" time="0.085" />
-  <testcase name="rechazaUsuarioConEspacios" classname="com.itla.autobuses.service.UsuarioServiceTest" time="0.044" />
-  <testcase name="rechazaRolInexistente" classname="com.itla.autobuses.service.ValidacionesCriticasTest" time="0.042" />
-  <testcase name="rechazaDistanciaExcesiva" classname="com.itla.autobuses.service.ValidacionesCriticasTest" time="0.042" />
-  <testcase name="rutaRequiereDestinoDiferente" classname="com.itla.autobuses.service.ValidacionesCriticasTest" time="0.041" />
+  <testcase name="guardaYRegistra" classname="com.itla.autobuses.service.RutaServiceTest" time="0.043" />
+  <testcase name="rechazaCodigoRepetido" classname="com.itla.autobuses.service.RutaServiceTest" time="0.042" />
+  <testcase name="validaCodigo" classname="com.itla.autobuses.service.RutaServiceTest" time="0.041" />
+  <testcase name="validaDistanciaYDuracion" classname="com.itla.autobuses.service.RutaServiceTest" time="0.043" />
+  <testcase name="claveSeGuardaConHash" classname="com.itla.autobuses.service.UsuarioServiceTest" time="0.063" />
+  <testcase name="genericoNoPuedeCrear" classname="com.itla.autobuses.service.UsuarioServiceTest" time="0.082" />
+  <testcase name="rechazaClaveCorta" classname="com.itla.autobuses.service.UsuarioServiceTest" time="0.043" />
+  <testcase name="rechazaUsuarioConEspacios" classname="com.itla.autobuses.service.UsuarioServiceTest" time="0.043" />
+  <testcase name="rechazaUsuarioCorto" classname="com.itla.autobuses.service.UsuarioServiceTest" time="0.041" />
+  <testcase name="usuarioDuplicado" classname="com.itla.autobuses.service.UsuarioServiceTest" time="0.083" />
   <testcase name="contrasenaActualNula" classname="com.itla.autobuses.service.ValidacionesCriticasTest" time="0.043" />
-  <testcase name="rechazaCapacidadExcesiva" classname="com.itla.autobuses.service.ValidacionesCriticasTest" time="0.044" />
-  <testcase name="noCancelaAsignacionCompletada" classname="com.itla.autobuses.service.ValidacionesCriticasTest" time="0.042" />
-  <testcase name="noReutilizaContrasena" classname="com.itla.autobuses.service.ValidacionesCriticasTest" time="0.086" />
-  <testcase name="noPuedeDegradarse" classname="com.itla.autobuses.service.ValidacionesCriticasTest" time="0.045" />
-  <testcase name="validaComplejidadDeContrasena" classname="com.itla.autobuses.service.ValidacionesCriticasTest" time="0.043" />
-  <testcase name="validaFormatoDeLicencia" classname="com.itla.autobuses.service.ValidacionesCriticasTest" time="0.043" />
-  <testcase name="verificarAceptaClaveCorrecta" classname="com.itla.autobuses.util.SeguridadTest" time="0.043" />
-  <testcase name="hashEsDeterministaConElMismoSalt" classname="com.itla.autobuses.util.SeguridadTest" time="0.042" />
-  <testcase name="verificarRechazaClaveIncorrecta" classname="com.itla.autobuses.util.SeguridadTest" time="0.041" />
+  <testcase name="noCancelaAsignacionCompletada" classname="com.itla.autobuses.service.ValidacionesCriticasTest" time="0.045" />
+  <testcase name="noPuedeDegradarse" classname="com.itla.autobuses.service.ValidacionesCriticasTest" time="0.041" />
+  <testcase name="noReutilizaContrasena" classname="com.itla.autobuses.service.ValidacionesCriticasTest" time="0.083" />
+  <testcase name="rechazaCapacidadExcesiva" classname="com.itla.autobuses.service.ValidacionesCriticasTest" time="0.037" />
+  <testcase name="rechazaDistanciaExcesiva" classname="com.itla.autobuses.service.ValidacionesCriticasTest" time="0.042" />
+  <testcase name="rechazaRolInexistente" classname="com.itla.autobuses.service.ValidacionesCriticasTest" time="0.043" />
+  <testcase name="rutaRequiereDestinoDiferente" classname="com.itla.autobuses.service.ValidacionesCriticasTest" time="0.042" />
+  <testcase name="validaComplejidadDeContrasena" classname="com.itla.autobuses.service.ValidacionesCriticasTest" time="0.041" />
+  <testcase name="validaFormatoDeLicencia" classname="com.itla.autobuses.service.ValidacionesCriticasTest" time="0.037" />
+  <testcase name="hashEsDeterministaConElMismoSalt" classname="com.itla.autobuses.util.SeguridadTest" time="0.04" />
   <testcase name="hashNoExponeLaClave" classname="com.itla.autobuses.util.SeguridadTest" time="0.021" />
-  <testcase name="saltsDistintosCambianElHash" classname="com.itla.autobuses.util.SeguridadTest" time="0.042" />
-  <testcase name="sesionEsSingleton" classname="com.itla.autobuses.util.SesionTest" time="0.001" />
-  <testcase name="sinUsuarioNoEsAdmin" classname="com.itla.autobuses.util.SesionTest" time="0.0" />
-  <testcase name="iniciarYCerrar" classname="com.itla.autobuses.util.SesionTest" time="0.0" />
+  <testcase name="saltsDistintosCambianElHash" classname="com.itla.autobuses.util.SeguridadTest" time="0.04" />
+  <testcase name="verificarAceptaClaveCorrecta" classname="com.itla.autobuses.util.SeguridadTest" time="0.042" />
+  <testcase name="verificarRechazaClaveIncorrecta" classname="com.itla.autobuses.util.SeguridadTest" time="0.041" />
+  <testcase name="iniciarYCerrar" classname="com.itla.autobuses.util.SesionTest" time="0.001" />
+  <testcase name="sesionEsSingleton" classname="com.itla.autobuses.util.SesionTest" time="0.002" />
+  <testcase name="sinUsuarioNoEsAdmin" classname="com.itla.autobuses.util.SesionTest" time="0.001" />
 </testsuite>

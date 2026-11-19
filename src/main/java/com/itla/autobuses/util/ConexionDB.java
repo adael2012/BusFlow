@@ -61,7 +61,7 @@ public final class ConexionDB {
             throw new IllegalStateException("db.properties incompleto: defina db.url, db.user y db.password");
         }
         if (clave.contains("TuPassword")) {
-            throw new IllegalStateException("Defina su contrasena de SQL Server en db.properties");
+            throw new IllegalStateException("Defina su contraseña de SQL Server en db.properties");
         }
     }
 

@@ -55,7 +55,7 @@ public class ConductorService {
             }
         } catch (SQLException e) {
             if (UsuarioService.esDuplicado(e)) {
-                throw new NegocioException("Ya existe un conductor con esa cedula o numero de licencia.");
+                throw new NegocioException("Ya existe un conductor con esa cédula o número de licencia.");
             }
             throw UsuarioService.errorBD(e);
         }
@@ -74,16 +74,16 @@ public class ConductorService {
 
     private void validar(Conductor k) throws NegocioException {
         if (k.getCedula() == null || !k.getCedula().matches("\\d{11}")) {
-            throw new NegocioException("La cedula debe tener 11 digitos, sin guiones.");
+            throw new NegocioException("La cédula debe tener 11 dígitos, sin guiones.");
         }
         if (vacio(k.getNombre()) || vacio(k.getApellido())) {
             throw new NegocioException("El nombre y el apellido son obligatorios.");
         }
         if (!vacio(k.getTelefono()) && !k.getTelefono().matches("[0-9+\\-() ]{7,15}")) {
-            throw new NegocioException("El telefono no tiene un formato valido.");
+            throw new NegocioException("El teléfono no tiene un formato válido.");
         }
         if (vacio(k.getNumeroLicencia()) || !k.getNumeroLicencia().matches("[A-Za-z0-9-]{5,30}")) {
-            throw new NegocioException("El numero de licencia debe tener entre 5 y 30 caracteres.");
+            throw new NegocioException("El número de licencia debe tener entre 5 y 30 caracteres.");
         }
         if (!vacio(k.getNombre()) && k.getNombre().length() > 60) {
             throw new NegocioException("El nombre no puede superar 60 caracteres.");
@@ -123,7 +123,7 @@ public class ConductorService {
 
     private void exigirAdmin() throws NegocioException {
         if (!Sesion.getInstancia().esAdmin()) {
-            throw new NegocioException("Solo el Administrador puede realizar esta accion.");
+            throw new NegocioException("Solo el Administrador puede realizar esta acción.");
         }
     }
 }

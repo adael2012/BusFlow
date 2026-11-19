@@ -14,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class FlujosIntegracionTest extends PruebaBase {
 
     @Test
-    @DisplayName("IT-01 Primer arranque: se crea el admin una sola vez y puede iniciar sesion")
+    @DisplayName("IT-01 Primer arranque: se crea el admin una sola vez y puede iniciar sesión")
     void primerArranqueYLogin() throws Exception {
         usuarios.crearAdminInicialSiNoExiste();
         usuarios.crearAdminInicialSiNoExiste();
@@ -27,7 +27,7 @@ class FlujosIntegracionTest extends PruebaBase {
     }
 
     @Test
-    @DisplayName("IT-02 Credenciales invalidas y usuario desactivado no inician sesion")
+    @DisplayName("IT-02 Credenciales invalidas y usuario desactivado no inician sesión")
     void loginRechazado() throws Exception {
         iniciarComoAdmin();
         usuarios.crear("operador1", "Clave1234", 2);
@@ -46,7 +46,7 @@ class FlujosIntegracionTest extends PruebaBase {
     }
 
     @Test
-    @DisplayName("IT-03 Admin crea un usuario generico y los permisos se aplican en todos los modulos")
+    @DisplayName("IT-03 Admin crea un usuario genérico y los permisos se aplican en todos los módulos")
     void permisosPorRol() throws Exception {
         iniciarComoGenerico();
         assertFalse(Sesion.getInstancia().esAdmin());
@@ -81,7 +81,7 @@ class FlujosIntegracionTest extends PruebaBase {
     }
 
     @Test
-    @DisplayName("IT-05 Restablecer contrasena invalida la anterior y habilita la nueva")
+    @DisplayName("IT-05 Restablecer contraseña invalida la anterior y habilita la nueva")
     void restablecerPassword() throws Exception {
         iniciarComoAdmin();
         usuarios.crear("operador1", "Clave1234", 2);
@@ -103,7 +103,7 @@ class FlujosIntegracionTest extends PruebaBase {
     }
 
     @Test
-    @DisplayName("IT-07 Cerrar sesion bloquea las operaciones protegidas")
+    @DisplayName("IT-07 Cerrar sesión bloquea las operaciones protegidas")
     void cerrarSesionBloqueaOperaciones() throws Exception {
         iniciarComoAdmin();
         auth.logout();

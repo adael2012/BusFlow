@@ -28,25 +28,25 @@ class ValidacionesCriticasTest extends PruebaBase {
     }
 
     @Test
-    @DisplayName("UT-63 Rechaza contrasena sin mayuscula o numero")
+    @DisplayName("UT-63 Rechaza contraseña sin mayúscula o número")
     void validaComplejidadDeContrasena() throws Exception {
         iniciarComoAdmin();
         NegocioException ex = assertThrows(NegocioException.class,
                 () -> usuarios.crear("operador9", "clave1234", 2));
-        assertTrue(ex.getMessage().contains("mayuscula"));
+        assertTrue(ex.getMessage().contains("mayúscula"));
     }
 
     @Test
-    @DisplayName("UT-64 Contrasena actual nula devuelve aviso controlado")
+    @DisplayName("UT-64 Contraseña actual nula devuelve aviso controlado")
     void contrasenaActualNula() throws Exception {
         iniciarComoAdmin();
         NegocioException ex = assertThrows(NegocioException.class,
                 () -> usuarios.cambiarPasswordPropio(null, "Nueva1234"));
-        assertEquals("La contrasena actual es incorrecta.", ex.getMessage());
+        assertEquals("La contraseña actual es incorrecta.", ex.getMessage());
     }
 
     @Test
-    @DisplayName("UT-65 No permite reutilizar la contrasena actual")
+    @DisplayName("UT-65 No permite reutilizar la contraseña actual")
     void noReutilizaContrasena() throws Exception {
         iniciarComoAdmin();
         NegocioException ex = assertThrows(NegocioException.class,
@@ -97,7 +97,7 @@ class ValidacionesCriticasTest extends PruebaBase {
     }
 
     @Test
-    @DisplayName("UT-70 Rechaza una capacidad mayor al limite del autobus")
+    @DisplayName("UT-70 Rechaza una capacidad mayor al limite del autobús")
     void rechazaCapacidadExcesiva() throws Exception {
         iniciarComoAdmin();
         var b = autobusValido();
@@ -108,7 +108,7 @@ class ValidacionesCriticasTest extends PruebaBase {
     }
 
     @Test
-    @DisplayName("UT-71 Valida el formato del numero de licencia")
+    @DisplayName("UT-71 Valida el formato del número de licencia")
     void validaFormatoDeLicencia() throws Exception {
         iniciarComoAdmin();
         var k = conductorValido();
@@ -119,7 +119,7 @@ class ValidacionesCriticasTest extends PruebaBase {
     }
 
     @Test
-    @DisplayName("UT-72 No se puede cancelar una asignacion completada")
+    @DisplayName("UT-72 No se puede cancelar una asignación completada")
     void noCancelaAsignacionCompletada() throws Exception {
         iniciarComoAdmin();
         var k = conductorValido();

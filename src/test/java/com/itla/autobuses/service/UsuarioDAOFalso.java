@@ -40,7 +40,7 @@ class UsuarioDAOFalso extends UsuarioDAO {
             throw new SQLException("duplicado", "23000", 2627);
         }
         nuevo.setId(++secuencia);
-        nuevo.setRolNombre(nuevo.getIdRol() == 1 ? "Administrador" : "Usuario Generico");
+        nuevo.setRolNombre(nuevo.getIdRol() == 1 ? "Administrador" : "Usuario Genérico");
         nuevo.setActivo(true);
         datos.put(nuevo.getId(), nuevo);
         return nuevo.getId();
@@ -50,7 +50,7 @@ class UsuarioDAOFalso extends UsuarioDAO {
     public void actualizar(int idUsuario, int idRol, boolean activo) {
         Usuario u = datos.get(idUsuario);
         u.setIdRol(idRol);
-        u.setRolNombre(idRol == 1 ? "Administrador" : "Usuario Generico");
+        u.setRolNombre(idRol == 1 ? "Administrador" : "Usuario Genérico");
         u.setActivo(activo);
     }
 

@@ -47,7 +47,8 @@ public class InicioPanel extends JPanel {
         subtitulo.setForeground(Tema.TEXTO_SECUNDARIO);
         JPanel titulo = new JPanel(new java.awt.GridLayout(2, 1, 0, 3));
         titulo.setBackground(Tema.FONDO);
-        JLabel nombre = new JLabel("Panel de administracion");
+        JLabel nombre = new JLabel(Sesion.getInstancia().esAdmin()
+                ? "Panel de administración" : "Panel de consulta");
         nombre.setFont(Tema.fuente(18, Font.BOLD));
         nombre.setForeground(Tema.VERDE);
         titulo.add(nombre);
@@ -87,7 +88,7 @@ public class InicioPanel extends JPanel {
                     datos.resumen = servicio.resumen();
                     datos.licencias = servicio.licenciasPorVencer();
                 } catch (Exception e) {
-                    datos.error = "No se pudieron cargar los indicadores. Revisa la conexion a la base de datos.";
+                    datos.error = "No se pudieron cargar los indicadores. Revisa la conexión a la base de datos.";
                 }
                 if (Sesion.getInstancia().esAdmin()) {
                     try {
@@ -116,7 +117,7 @@ public class InicioPanel extends JPanel {
         if (datos.error != null) {
             subtitulo.setText(datos.error);
         } else {
-            subtitulo.setText("Indicadores actualizados con la informacion registrada.");
+            subtitulo.setText("Indicadores actualizados con la información registrada.");
         }
 
         actualizarTarjeta(tarjetasPanel, 0, datos.resumen.getConductoresActivos());
@@ -129,7 +130,7 @@ public class InicioPanel extends JPanel {
         if (datos.errorActividad != null) {
             modeloActividad.addElement(datos.errorActividad);
         } else if (datos.actividad.isEmpty()) {
-            modeloActividad.addElement("Todavia no hay acciones registradas.");
+            modeloActividad.addElement("Todavia no hay acciónes registradas.");
         } else {
             for (EntradaBitacora e : datos.actividad) {
                 String fecha = e.getFecha() == null ? "--" : FORMATO.format(e.getFecha());
@@ -155,7 +156,7 @@ public class InicioPanel extends JPanel {
         alertas.setModel(modeloAlertas);
 
         areas.removeAll();
-        areas.add(seccion(actividad, "Actividad reciente", Iconos.de("bitacora", Tema.VERDE)));
+        areas.add(seccion(actividad, "Actividad reciente", Iconos.de("bitácora", Tema.VERDE)));
         areas.add(seccion(alertas, "Alertas", Iconos.de("alerta", Tema.ADVERTENCIA)));
         areas.revalidate();
         areas.repaint();

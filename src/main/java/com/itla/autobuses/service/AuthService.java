@@ -30,7 +30,7 @@ public class AuthService {
 
     public Usuario login(String username, String password) throws NegocioException {
         if (username == null || username.isBlank() || password == null || password.isEmpty()) {
-            throw new NegocioException("Ingresa usuario y contrasena.");
+            throw new NegocioException("Ingresa usuario y contraseña.");
         }
         String clave = username.trim().toLowerCase();
         verificarBloqueo(clave);
@@ -39,7 +39,7 @@ public class AuthService {
 
             if (u == null || !Seguridad.verificar(password, u.getSalt(), u.getPasswordHash())) {
                 registrarFallo(clave);
-                throw new NegocioException("Usuario o contrasena incorrectos.");
+                throw new NegocioException("Usuario o contraseña incorrectos.");
             }
             if (!u.isActivo()) {
                 registrarFallo(clave);
@@ -47,7 +47,7 @@ public class AuthService {
             }
             INTENTOS.remove(clave);
             Sesion.getInstancia().iniciar(u);
-            BitacoraHelper.registrar("LOGIN", "Usuario", u.getId(), "Inicio de sesion");
+            BitacoraHelper.registrar("LOGIN", "Usuario", u.getId(), "Inicio de sesión");
             return u;
         } catch (SQLException e) {
             throw new NegocioException("Error al acceder a la base de datos: " + e.getMessage(), e);
@@ -87,7 +87,7 @@ public class AuthService {
     public void logout() {
         Sesion s = Sesion.getInstancia();
         if (s.hayUsuario()) {
-            BitacoraHelper.registrar("LOGOUT", "Usuario", s.getUsuario().getId(), "Cierre de sesion");
+            BitacoraHelper.registrar("LOGOUT", "Usuario", s.getUsuario().getId(), "Cierre de sesión");
         }
         s.cerrar();
     }

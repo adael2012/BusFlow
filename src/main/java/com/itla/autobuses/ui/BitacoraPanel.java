@@ -15,12 +15,12 @@ public class BitacoraPanel extends JPanel {
 
     private final BitacoraService servicio = new BitacoraService();
     private final JTextField txtUsuario = Tema.campo("Usuario");
-    private final JTextField txtAccion = Tema.campo("Accion");
+    private final JTextField txtAccion = Tema.campo("Acción");
     private final CampoFechaHora txtDesde = new CampoFechaHora(false);
     private final CampoFechaHora txtHasta = new CampoFechaHora(false);
 
     private final DefaultTableModel modelo = new DefaultTableModel(
-            new String[]{"Id", "Fecha", "Usuario", "Accion", "Tabla", "Id registro", "Detalle"}, 0) {
+            new String[]{"Id", "Fecha", "Usuario", "Acción", "Tabla", "Id registro", "Detalle"}, 0) {
         @Override public boolean isCellEditable(int r, int c) { return false; }
     };
     private final JTable tabla = Tema.tabla(modelo);
@@ -36,7 +36,7 @@ public class BitacoraPanel extends JPanel {
         norte.setBackground(Tema.FONDO);
         norte.add(new JLabel("Usuario:"));
         norte.add(txtUsuario);
-        norte.add(new JLabel("Accion:"));
+        norte.add(new JLabel("Acción:"));
         norte.add(txtAccion);
         norte.add(new JLabel("Desde:"));
         norte.add(txtDesde);
@@ -44,8 +44,8 @@ public class BitacoraPanel extends JPanel {
         norte.add(txtHasta);
         norte.add(btnBuscar);
         norte.add(btnLimpiar);
-        add(Tema.contenidoSuperior("Bitacora",
-                "Registro de operaciones y auditoria del sistema.", norte), BorderLayout.NORTH);
+        add(Tema.contenidoSuperior("Bitácora",
+                "Registro de operaciones y auditoría del sistema.", norte), BorderLayout.NORTH);
         add(Tema.scroll(tabla), BorderLayout.CENTER);
 
         btnBuscar.addActionListener(e -> buscar());

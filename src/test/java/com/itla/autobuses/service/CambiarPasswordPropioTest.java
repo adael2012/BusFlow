@@ -9,7 +9,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class CambiarPasswordPropioTest extends PruebaBase {
 
     @Test
-    @DisplayName("UT-39 El administrador puede cambiar su propia contrasena")
+    @DisplayName("UT-39 El administrador puede cambiar su propia contraseña")
     void administradorCambiaSuContrasena() throws Exception {
         iniciarComoAdmin();
 
@@ -20,17 +20,17 @@ class CambiarPasswordPropioTest extends PruebaBase {
     }
 
     @Test
-    @DisplayName("UT-40 Rechaza una contrasena actual incorrecta")
+    @DisplayName("UT-40 Rechaza una contraseña actual incorrecta")
     void rechazaContrasenaActualIncorrecta() throws Exception {
         iniciarComoAdmin();
 
         NegocioException ex = assertThrows(NegocioException.class,
                 () -> usuarios.cambiarPasswordPropio("Incorrecta1", "Nueva1234"));
-        assertEquals("La contrasena actual es incorrecta.", ex.getMessage());
+        assertEquals("La contraseña actual es incorrecta.", ex.getMessage());
     }
 
     @Test
-    @DisplayName("UT-41 El usuario generico tambien puede cambiar la suya")
+    @DisplayName("UT-41 El usuario genérico tambien puede cambiar la suya")
     void genericoCambiaSuContrasena() throws Exception {
         iniciarComoGenerico();
 

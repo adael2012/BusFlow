@@ -52,7 +52,7 @@ public class AsignacionPanel extends JPanel {
     private List<Asignacion> datos = new ArrayList<>();
     private Asignacion actual = new Asignacion();
 
-    private final JTextField txtBuscar = Tema.campo("Buscar asignacion");
+    private final JTextField txtBuscar = Tema.campo("Buscar asignación");
     private final JComboBox<Conductor> cmbConductor = new JComboBox<>();
     private final JComboBox<Autobus> cmbAutobus = new JComboBox<>();
     private final JComboBox<Ruta> cmbRuta = new JComboBox<>();
@@ -62,7 +62,7 @@ public class AsignacionPanel extends JPanel {
             new String[]{Asignacion.PROGRAMADA, Asignacion.COMPLETADA});
 
     private final DefaultTableModel modelo = new DefaultTableModel(
-            new String[]{"Id", "Conductor", "Autobus", "Ruta", "Inicio", "Fin", "Estado"}, 0) {
+            new String[]{"Id", "Conductor", "Autobús", "Ruta", "Inicio", "Fin", "Estado"}, 0) {
         @Override public boolean isCellEditable(int r, int c) { return false; }
     };
     private final javax.swing.JTable tabla = Tema.tabla(modelo);
@@ -78,16 +78,19 @@ public class AsignacionPanel extends JPanel {
         JPanel filtros = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 4));
         filtros.setBackground(Tema.FONDO);
         if (Sesion.getInstancia().esAdmin()) {
-            JButton btnNuevo = Tema.boton("Asignacion", Iconos.de("nuevo", Color.WHITE));
+            JButton btnNuevo = Tema.boton("Asignación", Iconos.de("nuevo", Color.WHITE));
             btnNuevo.addActionListener(e -> abrirDialogo(true));
             filtros.add(btnNuevo);
             filtros.add(Tema.separador());
         }
         filtros.add(txtBuscar);
         JButton btnBuscar = Tema.botonSecundario("Buscar", Iconos.de("buscar", Tema.VERDE));
-        JButton btnExportar = Tema.botonSecundario("Exportar CSV");
         filtros.add(btnBuscar);
-        filtros.add(btnExportar);
+        if (Sesion.getInstancia().esAdmin()) {
+            JButton btnExportar = Tema.botonSecundario("Exportar CSV");
+            btnExportar.addActionListener(e -> exportar());
+            filtros.add(btnExportar);
+        }
         add(Tema.contenidoSuperior("Asignaciones",
                 "Programa viajes y controla la disponibilidad de recursos.", filtros), BorderLayout.NORTH);
 
@@ -104,7 +107,6 @@ public class AsignacionPanel extends JPanel {
 
         btnBuscar.addActionListener(e -> cargar(txtBuscar.getText()));
         txtBuscar.addActionListener(e -> cargar(txtBuscar.getText()));
-        btnExportar.addActionListener(e -> exportar());
         tabla.getSelectionModel().addListSelectionListener(e -> {
             if (!e.getValueIsAdjusting()) {
                 seleccionar();
@@ -122,7 +124,7 @@ public class AsignacionPanel extends JPanel {
         if (dialogo == null) {
             dialogo = crearDialogo();
         }
-        dialogo.setTitle(nuevo ? "Nueva asignacion" : "Editar asignacion");
+        dialogo.setTitle(nuevo ? "Nueva asignación" : "Editar asignación");
         btnCancelarAsignacion.setVisible(!nuevo && actual.getId() > 0);
         dialogo.setVisible(true);
     }
@@ -131,7 +133,7 @@ public class AsignacionPanel extends JPanel {
         JPanel form = new JPanel(new GridLayout(5, 2, 10, 10));
         form.setBackground(Color.WHITE);
         form.add(etiqueta("Conductor")); form.add(cmbConductor);
-        form.add(etiqueta("Autobus")); form.add(cmbAutobus);
+        form.add(etiqueta("Autobús")); form.add(cmbAutobus);
         form.add(etiqueta("Ruta")); form.add(cmbRuta);
         form.add(etiqueta("Inicio")); form.add(txtInicio);
         form.add(etiqueta("Fin")); form.add(txtFin);
@@ -147,7 +149,7 @@ public class AsignacionPanel extends JPanel {
         contenido.add(form, BorderLayout.CENTER);
         contenido.add(estado, BorderLayout.SOUTH);
 
-        btnCancelarAsignacion = Tema.botonPeligro("Cancelar asignacion", Iconos.de("alerta", Tema.ERROR));
+        btnCancelarAsignacion = Tema.botonPeligro("Cancelar asignación", Iconos.de("alerta", Tema.ERROR));
         btnCancelarAsignacion.addActionListener(e -> cancelar());
         JButton btnCancelar = Tema.botonSecundario("Cancelar");
         btnCancelar.addActionListener(e -> dialogo.dispose());
@@ -155,7 +157,7 @@ public class AsignacionPanel extends JPanel {
         btnGuardar.addActionListener(e -> guardar());
 
         Frame padre = (Frame) SwingUtilities.getWindowAncestor(this);
-        return Tema.dialogo(padre, "Nueva asignacion",
+        return Tema.dialogo(padre, "Nueva asignación",
                 "Selecciona los recursos y el horario del viaje.", contenido,
                 btnCancelarAsignacion, btnCancelar, btnGuardar);
     }
@@ -248,10 +250,10 @@ public class AsignacionPanel extends JPanel {
 
     private void cancelar() {
         if (actual.getId() == 0) {
-            aviso("Selecciona una asignacion de la tabla.");
+            aviso("Selecciona una asignación de la tabla.");
             return;
         }
-        int r = JOptionPane.showConfirmDialog(this, "Cancelar la asignacion seleccionada?",
+        int r = JOptionPane.showConfirmDialog(this, "Cancelar la asignación seleccionada?",
                 "Confirmar", JOptionPane.YES_NO_OPTION);
         if (r != JOptionPane.YES_OPTION) {
             return;
@@ -273,7 +275,7 @@ public class AsignacionPanel extends JPanel {
         }
         File destino = chooser.getSelectedFile();
         try (BufferedWriter w = Files.newBufferedWriter(destino.toPath(), StandardCharsets.UTF_8)) {
-            w.write("Id;Conductor;Autobus;Ruta;Inicio;Fin;Estado\n");
+            w.write("Id;Conductor;Autobús;Ruta;Inicio;Fin;Estado\n");
             for (Asignacion a : datos) {
                 w.write(a.getId() + ";" + a.getNombreConductor() + ";" + a.getPlacaAutobus()
                         + ";" + a.getCodigoRuta() + ";" + texto(a.getFechaInicio())

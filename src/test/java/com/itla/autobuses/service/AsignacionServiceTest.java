@@ -65,7 +65,7 @@ class AsignacionServiceTest extends PruebaBase {
     }
 
     @Test
-    @DisplayName("UT-54 Guarda una asignacion y registra la bitacora")
+    @DisplayName("UT-54 Guarda una asignación y registra la bitácora")
     void guardaYRegistra() throws Exception {
         prepararDatos();
         Asignacion a = asignacionValida(k1, b1, r1);
@@ -74,7 +74,7 @@ class AsignacionServiceTest extends PruebaBase {
 
         assertEquals(1, a.getId());
         assertEquals(1, servicio.listar().size());
-        assertTrue(bitacora.acciones.contains("CREAR:Asignacion"));
+        assertTrue(bitacora.acciones.contains("CREAR:Asignación"));
     }
 
     @Test
@@ -92,7 +92,7 @@ class AsignacionServiceTest extends PruebaBase {
     }
 
     @Test
-    @DisplayName("UT-56 Rechaza un solape de autobus")
+    @DisplayName("UT-56 Rechaza un solape de autobús")
     void rechazaSolapeDeAutobus() throws Exception {
         prepararDatos();
         Asignacion primera = asignacionValida(k1, b1, r1);
@@ -100,7 +100,7 @@ class AsignacionServiceTest extends PruebaBase {
 
         Asignacion segunda = asignacionValida(k2, b1, r2);
 
-        assertTrue(error(segunda).contains("autobus ya esta"));
+        assertTrue(error(segunda).contains("autobús ya esta"));
     }
 
     @Test
@@ -143,7 +143,7 @@ class AsignacionServiceTest extends PruebaBase {
     }
 
     @Test
-    @DisplayName("UT-59 Cancela una asignacion")
+    @DisplayName("UT-59 Cancela una asignación")
     void cancela() throws Exception {
         prepararDatos();
         Asignacion a = asignacionValida(k1, b1, r1);
@@ -152,7 +152,7 @@ class AsignacionServiceTest extends PruebaBase {
         servicio.cancelar(a);
 
         assertEquals(Asignacion.CANCELADA, a.getEstado());
-        assertTrue(bitacora.acciones.contains("CANCELAR:Asignacion"));
+        assertTrue(bitacora.acciones.contains("CANCELAR:Asignación"));
     }
 
     @Test

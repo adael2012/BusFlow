@@ -27,14 +27,14 @@ import java.awt.RenderingHints;
 public class LoginFrame extends JFrame {
 
     private final JTextField txtUsuario = Tema.campo("Usuario");
-    private final JPasswordField txtClave = Tema.clave("Contrasena");
-    private final JCheckBox chkMostrar = new JCheckBox("Mostrar contrasena");
+    private final JPasswordField txtClave = Tema.clave("Contraseña");
+    private final JCheckBox chkMostrar = new JCheckBox("Mostrar contraseña");
     private final JLabel lblError = new JLabel(" ");
     private final JButton btnIngresar = Tema.boton("Ingresar", Iconos.de("check", Color.WHITE));
     private final AuthService auth = new AuthService();
 
     public LoginFrame() {
-        super("Ruta Control - Iniciar sesion");
+        super("Ruta Control - Iniciar sesión");
         setDefaultCloseOperation(EXIT_ON_CLOSE);
 
         JPanel raiz = new JPanel(new BorderLayout());
@@ -89,7 +89,7 @@ public class LoginFrame extends JFrame {
         textos.setBorder(BorderFactory.createEmptyBorder(54, 0, 0, 0));
         textos.add(linea("CONTROL DE", 28, Color.WHITE));
         textos.add(linea("AUTOBUSES", 28, Color.WHITE));
-        textos.add(linea("Administracion de transporte", 13, Tema.VERDE_CLARO));
+        textos.add(linea("Administración de transporte", 13, Tema.VERDE_CLARO));
         textos.add(linea("Conductores, unidades y rutas", 13, Tema.VERDE_CLARO));
 
         JPanel centro = new JPanel(new BorderLayout(0, 26));
@@ -184,7 +184,7 @@ public class LoginFrame extends JFrame {
         p.add(txtUsuario, g);
 
         g.gridy = 4;
-        p.add(etiquetaCampo("Contrasena"), g);
+        p.add(etiquetaCampo("Contraseña"), g);
 
         g.gridy = 5;
         g.insets = new Insets(0, 0, 8, 0);

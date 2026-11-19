@@ -2,6 +2,7 @@ package com.itla.autobuses.model;
 
 public class Rol {
     public static final String ADMINISTRADOR = "Administrador";
+    public static final String USUARIO_GENERICO = "Usuario Genérico";
 
     private final int id;
     private final String nombre;

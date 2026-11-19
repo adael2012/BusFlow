@@ -62,7 +62,7 @@ public class AsignacionService {
             if (a.getId() > 0) {
                 Asignacion anterior = buscarAsignacion(a.getId());
                 if (anterior != null && Asignacion.CANCELADA.equals(anterior.getEstado())) {
-                    throw new NegocioException("No se puede editar una asignacion cancelada.");
+                    throw new NegocioException("No se puede editar una asignación cancelada.");
                 }
             }
             validarDisponibilidad(a);
@@ -70,10 +70,10 @@ public class AsignacionService {
                 a.setIdUsuarioRegistro(Sesion.getInstancia().getUsuario().getId());
                 int id = dao.insertar(a);
                 a.setId(id);
-                BitacoraHelper.registrar("CREAR", "Asignacion", id, detalle(a));
+                BitacoraHelper.registrar("CREAR", "Asignación", id, detalle(a));
             } else {
                 dao.actualizar(a);
-                BitacoraHelper.registrar("ACTUALIZAR", "Asignacion", a.getId(), detalle(a));
+                BitacoraHelper.registrar("ACTUALIZAR", "Asignación", a.getId(), detalle(a));
             }
         } catch (SQLException e) {
             throw UsuarioService.errorBD(e);
@@ -83,19 +83,19 @@ public class AsignacionService {
     public void cancelar(Asignacion a) throws NegocioException {
         exigirAdmin();
         if (a.getId() == 0) {
-            throw new NegocioException("Selecciona una asignacion de la tabla.");
+            throw new NegocioException("Selecciona una asignación de la tabla.");
         }
         try {
             Asignacion anterior = buscarAsignacion(a.getId());
             if (anterior == null) {
-                throw new NegocioException("La asignacion ya no existe.");
+                throw new NegocioException("La asignación ya no existe.");
             }
             if (!Asignacion.PROGRAMADA.equals(anterior.getEstado())) {
-                throw new NegocioException("Solo se puede cancelar una asignacion programada.");
+                throw new NegocioException("Solo se puede cancelar una asignación programada.");
             }
             dao.cancelar(a.getId());
             a.setEstado(Asignacion.CANCELADA);
-            BitacoraHelper.registrar("CANCELAR", "Asignacion", a.getId(), detalle(a));
+            BitacoraHelper.registrar("CANCELAR", "Asignación", a.getId(), detalle(a));
         } catch (SQLException e) {
             throw UsuarioService.errorBD(e);
         }
@@ -142,7 +142,7 @@ public class AsignacionService {
 
     private void validar(Asignacion a) throws NegocioException {
         if (a.getIdConductor() <= 0 || a.getIdAutobus() <= 0 || a.getIdRuta() <= 0) {
-            throw new NegocioException("Selecciona conductor, autobus y ruta.");
+            throw new NegocioException("Selecciona conductor, autobús y ruta.");
         }
         validarRango(a.getFechaInicio(), a.getFechaFin());
         if (a.getId() == 0 && a.getFechaInicio().isBefore(LocalDateTime.now().minusMinutes(1))) {
@@ -150,7 +150,7 @@ public class AsignacionService {
         }
         if (a.getEstado() == null || (!Asignacion.PROGRAMADA.equals(a.getEstado())
                 && !Asignacion.COMPLETADA.equals(a.getEstado()))) {
-            throw new NegocioException("Estado no valido.");
+            throw new NegocioException("Estado no válido.");
         }
     }
 
@@ -160,11 +160,11 @@ public class AsignacionService {
             throw new NegocioException("El conductor seleccionado no existe o esta inactivo.");
         }
         if (!k.licenciaVigente() || k.getVencimientoLicencia().isBefore(a.getFechaFin().toLocalDate())) {
-            throw new NegocioException("La licencia del conductor no esta vigente durante la asignacion.");
+            throw new NegocioException("La licencia del conductor no esta vigente durante la asignación.");
         }
         Autobus b = buscarAutobus(a.getIdAutobus());
         if (b == null || !b.estaOperativo()) {
-            throw new NegocioException("El autobus seleccionado no esta operativo.");
+            throw new NegocioException("El autobús seleccionado no esta operativo.");
         }
         Ruta r = buscarRuta(a.getIdRuta());
         if (r == null || !r.isActivo()) {
@@ -173,10 +173,10 @@ public class AsignacionService {
         if (Asignacion.PROGRAMADA.equals(a.getEstado())) {
             int idExcluido = a.getId();
             if (dao.conductorOcupado(a.getIdConductor(), a.getFechaInicio(), a.getFechaFin(), idExcluido)) {
-                throw new NegocioException("El conductor ya tiene una asignacion en ese horario.");
+                throw new NegocioException("El conductor ya tiene una asignación en ese horario.");
             }
             if (dao.autobusOcupado(a.getIdAutobus(), a.getFechaInicio(), a.getFechaFin(), idExcluido)) {
-                throw new NegocioException("El autobus ya esta asignado en ese horario.");
+                throw new NegocioException("El autobús ya esta asignado en ese horario.");
             }
         }
     }
@@ -233,7 +233,7 @@ public class AsignacionService {
 
     private void exigirAdmin() throws NegocioException {
         if (!Sesion.getInstancia().esAdmin()) {
-            throw new NegocioException("Solo el Administrador puede realizar esta accion.");
+            throw new NegocioException("Solo el Administrador puede realizar esta acción.");
         }
     }
 }

@@ -15,13 +15,13 @@ class SesionTest {
     }
 
     @Test
-    @DisplayName("UT-06 Sesion es un Singleton")
+    @DisplayName("UT-06 Sesión es un Singleton")
     void sesionEsSingleton() {
         assertSame(Sesion.getInstancia(), Sesion.getInstancia());
     }
 
     @Test
-    @DisplayName("UT-07 Sesion sin usuario no es administrador")
+    @DisplayName("UT-07 Sesión sin usuario no es administrador")
     void sinUsuarioNoEsAdmin() {
         Sesion.getInstancia().cerrar();
         assertFalse(Sesion.getInstancia().hayUsuario());
@@ -29,7 +29,7 @@ class SesionTest {
     }
 
     @Test
-    @DisplayName("UT-08 Iniciar y cerrar sesion actualiza el estado")
+    @DisplayName("UT-08 Iniciar y cerrar sesión actualiza el estado")
     void iniciarYCerrar() {
         Usuario u = new Usuario();
         u.setUsername("admin");

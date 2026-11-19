@@ -66,7 +66,7 @@ public class RutaService {
             }
         } catch (SQLException e) {
             if (UsuarioService.esDuplicado(e)) {
-                throw new NegocioException("Ya existe una ruta con ese codigo.");
+                throw new NegocioException("Ya existe una ruta con ese código.");
             }
             throw UsuarioService.errorBD(e);
         }
@@ -85,7 +85,7 @@ public class RutaService {
 
     private void validar(Ruta r) throws NegocioException {
         if (r.getCodigo() == null || !r.getCodigo().trim().matches("[A-Za-z0-9-]{2,10}")) {
-            throw new NegocioException("El codigo debe tener entre 2 y 10 caracteres.");
+            throw new NegocioException("El código debe tener entre 2 y 10 caracteres.");
         }
         if (vacio(r.getOrigen()) || vacio(r.getDestino())) {
             throw new NegocioException("El origen y el destino son obligatorios.");
@@ -101,7 +101,7 @@ public class RutaService {
             throw new NegocioException("La distancia debe estar entre 0.01 y 999999.99 km.");
         }
         if (r.getDuracionMin() <= 0 || r.getDuracionMin() > DURACION_MAXIMA) {
-            throw new NegocioException("La duracion debe estar entre 1 y 1440 minutos.");
+            throw new NegocioException("La duración debe estar entre 1 y 1440 minutos.");
         }
     }
 
@@ -123,7 +123,7 @@ public class RutaService {
 
     private void exigirAdmin() throws NegocioException {
         if (!Sesion.getInstancia().esAdmin()) {
-            throw new NegocioException("Solo el Administrador puede realizar esta accion.");
+            throw new NegocioException("Solo el Administrador puede realizar esta acción.");
         }
     }
 }

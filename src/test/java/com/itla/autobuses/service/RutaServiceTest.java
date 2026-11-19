@@ -24,7 +24,7 @@ class RutaServiceTest extends PruebaBase {
     }
 
     @Test
-    @DisplayName("UT-48 Valida el codigo de la ruta")
+    @DisplayName("UT-48 Valida el código de la ruta")
     void validaCodigo() throws Exception {
         iniciarComoAdmin();
         Ruta r = rutaValida();
@@ -33,7 +33,7 @@ class RutaServiceTest extends PruebaBase {
     }
 
     @Test
-    @DisplayName("UT-49 Valida distancia y duracion")
+    @DisplayName("UT-49 Valida distancia y duración")
     void validaDistanciaYDuracion() throws Exception {
         iniciarComoAdmin();
         Ruta r = rutaValida();
@@ -42,11 +42,11 @@ class RutaServiceTest extends PruebaBase {
 
         r.setDistanciaKm(new java.math.BigDecimal("12.5"));
         r.setDuracionMin(0);
-        assertTrue(error(r).contains("duracion"));
+        assertTrue(error(r).contains("duración"));
     }
 
     @Test
-    @DisplayName("UT-50 Guarda una ruta y registra la bitacora")
+    @DisplayName("UT-50 Guarda una ruta y registra la bitácora")
     void guardaYRegistra() throws Exception {
         iniciarComoAdmin();
         Ruta r = rutaValida();
@@ -59,7 +59,7 @@ class RutaServiceTest extends PruebaBase {
     }
 
     @Test
-    @DisplayName("UT-51 Rechaza un codigo repetido")
+    @DisplayName("UT-51 Rechaza un código repetido")
     void rechazaCodigoRepetido() throws Exception {
         iniciarComoAdmin();
         servicio.guardar(rutaValida());

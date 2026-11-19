@@ -29,14 +29,14 @@ class UsuarioServiceTest extends PruebaBase {
     }
 
     @Test
-    @DisplayName("UT-26 Rechaza contrasena de menos de 8 caracteres")
+    @DisplayName("UT-26 Rechaza contraseña de menos de 8 caracteres")
     void rechazaClaveCorta() throws Exception {
         iniciarComoAdmin();
         assertTrue(errorCrear("operador1", "1234567").contains("8 caracteres"));
     }
 
     @Test
-    @DisplayName("UT-27 Usuario generico no puede crear usuarios")
+    @DisplayName("UT-27 Usuario genérico no puede crear usuarios")
     void genericoNoPuedeCrear() throws Exception {
         iniciarComoGenerico();
         assertTrue(errorCrear("otro", "Clave1234").contains("Administrador"));
@@ -51,7 +51,7 @@ class UsuarioServiceTest extends PruebaBase {
     }
 
     @Test
-    @DisplayName("UT-29 La contrasena se guarda con hash y no en texto plano")
+    @DisplayName("UT-29 La contraseña se guarda con hash y no en texto plano")
     void claveSeGuardaConHash() throws Exception {
         iniciarComoAdmin();
         usuarios.crear("operador1", "Clave1234", 2);
