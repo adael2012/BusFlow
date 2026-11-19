@@ -1,0 +1,36 @@
+Sistema de Control de Autobuses - Resumen de pruebas
+Fecha: 2026-11-18
+Comandos: mvn clean package / mvn test
+
+Resultado general
+  Tests run: 72
+  Failures: 0
+  Errors: 0
+  Skipped: 0
+  Resultado: BUILD SUCCESS
+  JAR: target/control-autobuses-1.0.0.jar
+
+Detalle por clase
+  ModeloTest                    5  [OK]
+  SeguridadTest                 5  [OK]
+  SesionTest                    3  [OK]
+  BloqueoLoginTest              2  [OK]
+  UsuarioServiceTest            6  [OK]
+  CambiarPasswordPropioTest     3  [OK]
+  ConductorServiceTest         10  [OK]
+  AutobusServiceTest            6  [OK]
+  RutaServiceTest               6  [OK]
+  AsignacionServiceTest         7  [OK]
+  PanelServiceTest              2  [OK]
+  FlujosIntegracionTest         7  [OK]
+  ValidacionesCriticasTest     10  [OK]
+
+Cobertura funcional
+  - Modelo y seguridad de contrasenas PBKDF2.
+  - Sesion, roles y bloqueo temporal de acceso.
+  - Altas, busquedas, cambios de estado y desactivaciones.
+  - Validaciones criticas de usuarios, conductores, autobuses, rutas y asignaciones.
+  - Solapes de conductor y autobus, licencias vigentes y disponibilidad.
+  - Flujos de integracion entre servicios con DAO en memoria.
+
+Nota: las pruebas no requieren SQL Server porque los servicios reciben los DAO por constructor.
