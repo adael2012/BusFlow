@@ -5,9 +5,23 @@ import com.itla.autobuses.service.ConductorService;
 import com.itla.autobuses.util.NegocioException;
 import com.itla.autobuses.util.Sesion;
 
-import javax.swing.*;
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableModel;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.Frame;
+import java.awt.GridLayout;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
@@ -19,83 +33,107 @@ public class ConductorPanel extends JPanel {
     private List<Conductor> datos = new ArrayList<>();
     private Conductor actual = new Conductor();
 
-    private final JTextField txtBuscar = new JTextField(20);
+    private final JTextField txtBuscar = Tema.campo("Escribe para buscar");
     private final DefaultTableModel modelo = new DefaultTableModel(
-            new String[]{"Id", "Cedula", "Nombre", "Apellido", "Telefono", "Licencia", "Vence", "Activo"}, 0) {
+            new String[]{"Id", "Cedula", "Nombre", "Apellido", "Telefono", "Licencia", "Vence", "Estado"}, 0) {
         @Override public boolean isCellEditable(int r, int c) { return false; }
     };
-    private final JTable tabla = new JTable(modelo);
+    private final javax.swing.JTable tabla = Tema.tabla(modelo);
 
-    private final JTextField txtCedula = new JTextField();
-    private final JTextField txtNombre = new JTextField();
-    private final JTextField txtApellido = new JTextField();
-    private final JTextField txtTelefono = new JTextField();
-    private final JTextField txtLicencia = new JTextField();
-    private final JTextField txtVence = new JTextField();
+    private final JTextField txtCedula = Tema.campo("000-0000000");
+    private final JTextField txtNombre = Tema.campo("Nombre");
+    private final JTextField txtApellido = Tema.campo("Apellido");
+    private final JTextField txtTelefono = Tema.campo("809-000-0000");
+    private final JTextField txtLicencia = Tema.campo("Numero de licencia");
+    private final JTextField txtVence = Tema.campo("aaaa-mm-dd");
     private final JCheckBox chkActivo = new JCheckBox("Activo", true);
 
-    private final JButton btnNuevo = new JButton("Nuevo");
-    private final JButton btnGuardar = new JButton("Guardar");
-    private final JButton btnDesactivar = new JButton("Desactivar");
+    private JDialog dialogo;
+    private JButton btnDesactivar;
 
     public ConductorPanel() {
         setLayout(new BorderLayout(8, 8));
         setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        setBackground(Tema.FONDO);
 
-        JButton btnBuscar = new JButton("Buscar");
-        JButton btnTodos = new JButton("Mostrar todos");
-        JPanel norte = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        norte.add(new JLabel("Buscar (cedula, nombre o licencia):"));
-        norte.add(txtBuscar);
-        norte.add(btnBuscar);
-        norte.add(btnTodos);
-        add(norte, BorderLayout.NORTH);
+        JPanel filtros = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 4));
+        filtros.setBackground(Tema.FONDO);
+        if (Sesion.getInstancia().esAdmin()) {
+            JButton btnNuevo = Tema.boton("Nuevo", Iconos.de("nuevo", java.awt.Color.WHITE));
+            btnNuevo.addActionListener(e -> abrirDialogo(true));
+            filtros.add(btnNuevo);
+            filtros.add(Tema.separador());
+        }
+        filtros.add(txtBuscar);
+        JButton btnBuscar = Tema.botonSecundario("Buscar", Iconos.de("buscar", Tema.VERDE));
+        filtros.add(btnBuscar);
+        add(Tema.contenidoSuperior("Conductores",
+                "Administra y consulta los registros del sistema.", filtros), BorderLayout.NORTH);
 
-        tabla.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        tabla.setAutoCreateRowSorter(true);
-        add(new JScrollPane(tabla), BorderLayout.CENTER);
-
-        JPanel form = new JPanel(new GridLayout(4, 4, 8, 6));
-        form.add(new JLabel("Cedula (11 digitos):")); form.add(txtCedula);
-        form.add(new JLabel("Nombre:")); form.add(txtNombre);
-        form.add(new JLabel("Apellido:")); form.add(txtApellido);
-        form.add(new JLabel("Telefono:")); form.add(txtTelefono);
-        form.add(new JLabel("No. de licencia:")); form.add(txtLicencia);
-        form.add(new JLabel("Vence (aaaa-mm-dd):")); form.add(txtVence);
-        form.add(new JLabel("Estado:")); form.add(chkActivo);
-        form.add(new JLabel("")); form.add(new JLabel(""));
-
-        JPanel botones = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        botones.add(btnNuevo);
-        botones.add(btnGuardar);
-        botones.add(btnDesactivar);
-
-        JPanel sur = new JPanel(new BorderLayout(0, 6));
-        sur.setBorder(BorderFactory.createTitledBorder("Datos del conductor"));
-        sur.add(form, BorderLayout.CENTER);
-        sur.add(botones, BorderLayout.SOUTH);
-        add(sur, BorderLayout.SOUTH);
+        tabla.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        tabla.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (e.getClickCount() == 2 && Sesion.getInstancia().esAdmin()) {
+                    abrirDialogo(false);
+                }
+            }
+        });
+        add(Tema.scroll(tabla), BorderLayout.CENTER);
 
         btnBuscar.addActionListener(e -> cargar(txtBuscar.getText()));
         txtBuscar.addActionListener(e -> cargar(txtBuscar.getText()));
-        btnTodos.addActionListener(e -> { txtBuscar.setText(""); cargar(""); });
-        btnNuevo.addActionListener(e -> limpiar());
-        btnGuardar.addActionListener(e -> guardar());
-        btnDesactivar.addActionListener(e -> desactivar());
         tabla.getSelectionModel().addListSelectionListener(e -> {
             if (!e.getValueIsAdjusting()) {
                 seleccionar();
             }
         });
 
-        if (!Sesion.getInstancia().esAdmin()) {
-            for (JComponent c : new JComponent[]{txtCedula, txtNombre, txtApellido, txtTelefono,
-                    txtLicencia, txtVence, chkActivo}) {
-                c.setEnabled(false);
-            }
-            botones.setVisible(false);
-        }
         cargar("");
+    }
+
+    private void abrirDialogo(boolean nuevo) {
+        if (nuevo) {
+            limpiar();
+        }
+        if (dialogo == null) {
+            dialogo = crearDialogo();
+        }
+        dialogo.setTitle(nuevo ? "Nuevo registro" : "Editar registro");
+        btnDesactivar.setVisible(!nuevo && actual.getId() > 0);
+        dialogo.setVisible(true);
+    }
+
+    private JDialog crearDialogo() {
+        JPanel form = new JPanel(new GridLayout(7, 2, 10, 10));
+        form.setBackground(java.awt.Color.WHITE);
+        form.add(etiqueta("Cedula")); form.add(txtCedula);
+        form.add(etiqueta("Nombre")); form.add(txtNombre);
+        form.add(etiqueta("Apellido")); form.add(txtApellido);
+        form.add(etiqueta("Telefono")); form.add(txtTelefono);
+        form.add(etiqueta("Licencia")); form.add(txtLicencia);
+        form.add(etiqueta("Vencimiento")); form.add(txtVence);
+        form.add(etiqueta("Estado")); form.add(chkActivo);
+        form.setBorder(BorderFactory.createEmptyBorder(4, 4, 10, 4));
+
+        btnDesactivar = Tema.botonPeligro("Desactivar", Iconos.de("alerta", Tema.ERROR));
+        btnDesactivar.addActionListener(e -> desactivar());
+        JButton btnCancelar = Tema.botonSecundario("Cancelar");
+        btnCancelar.addActionListener(e -> dialogo.dispose());
+        JButton btnGuardar = Tema.boton("Guardar", Iconos.de("check", java.awt.Color.WHITE));
+        btnGuardar.addActionListener(e -> guardar());
+
+        Frame padre = (Frame) SwingUtilities.getWindowAncestor(this);
+        return Tema.dialogo(padre, "Nuevo registro",
+                "Complete los datos del conductor.", form,
+                btnDesactivar, btnCancelar, btnGuardar);
+    }
+
+    private JLabel etiqueta(String texto) {
+        JLabel l = new JLabel(texto);
+        l.setFont(Tema.fuente(11, Font.BOLD));
+        l.setForeground(Tema.TEXTO);
+        return l;
     }
 
     private void cargar(String texto) {
@@ -105,7 +143,7 @@ public class ConductorPanel extends JPanel {
             for (Conductor k : datos) {
                 modelo.addRow(new Object[]{k.getId(), k.getCedula(), k.getNombre(), k.getApellido(),
                         k.getTelefono(), k.getNumeroLicencia(), k.getVencimientoLicencia(),
-                        k.isActivo() ? "Si" : "No"});
+                        k.isActivo() ? "Activo" : "Inactivo"});
             }
         } catch (NegocioException ex) {
             aviso(ex.getMessage());
@@ -158,8 +196,7 @@ public class ConductorPanel extends JPanel {
                 throw new NegocioException("La fecha debe tener el formato aaaa-mm-dd (ej. 2028-05-30).");
             }
             servicio.guardar(actual);
-            JOptionPane.showMessageDialog(this, "Conductor guardado correctamente.");
-            limpiar();
+            dialogo.dispose();
             cargar(txtBuscar.getText());
         } catch (NegocioException ex) {
             aviso(ex.getMessage());
@@ -179,7 +216,7 @@ public class ConductorPanel extends JPanel {
         }
         try {
             servicio.desactivar(actual);
-            limpiar();
+            dialogo.dispose();
             cargar(txtBuscar.getText());
         } catch (NegocioException ex) {
             aviso(ex.getMessage());
