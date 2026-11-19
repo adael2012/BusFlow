@@ -188,13 +188,13 @@ public class AutobusPanel extends JPanel {
             actual.setPlaca(txtPlaca.getText().trim());
             actual.setMarca(txtMarca.getText().trim());
             actual.setModelo(txtModelo.getText().trim());
-            actual.setAnio(Integer.parseInt(txtAnio.getText().trim()));
-            actual.setCapacidad(Integer.parseInt(txtCapacidad.getText().trim()));
+            actual.setAnio(ValidacionUI.entero(txtAnio, "el", "anio"));
+            actual.setCapacidad(ValidacionUI.entero(txtCapacidad, "la", "capacidad"));
             actual.setEstado((String) cmbEstado.getSelectedItem());
             servicio.guardar(actual);
             dialogo.dispose();
             cargar(txtBuscar.getText());
-        } catch (NegocioException | NumberFormatException ex) {
+        } catch (NegocioException ex) {
             aviso(ex.getMessage());
         }
     }

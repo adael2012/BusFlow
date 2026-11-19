@@ -23,7 +23,6 @@ import java.awt.Frame;
 import java.awt.GridLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -184,13 +183,13 @@ public class RutaPanel extends JPanel {
             actual.setCodigo(txtCodigo.getText().trim());
             actual.setOrigen(txtOrigen.getText().trim());
             actual.setDestino(txtDestino.getText().trim());
-            actual.setDistanciaKm(new BigDecimal(txtDistancia.getText().trim()));
-            actual.setDuracionMin(Integer.parseInt(txtDuracion.getText().trim()));
+            actual.setDistanciaKm(ValidacionUI.decimal(txtDistancia, "la", "distancia"));
+            actual.setDuracionMin(ValidacionUI.entero(txtDuracion, "la", "duracion"));
             actual.setActivo(chkActivo.isSelected());
             servicio.guardar(actual);
             dialogo.dispose();
             cargar(txtBuscar.getText());
-        } catch (NegocioException | NumberFormatException ex) {
+        } catch (NegocioException ex) {
             aviso(ex.getMessage());
         }
     }
