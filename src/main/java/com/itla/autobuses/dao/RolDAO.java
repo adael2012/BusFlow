@@ -15,7 +15,7 @@ public class RolDAO {
     public List<Rol> listar() throws SQLException {
         List<Rol> lista = new ArrayList<>();
         try (Connection c = ConexionDB.getInstancia().getConexion();
-             CallableStatement cs = c.prepareCall("{call sp_Rol_Listar}");
+             CallableStatement cs = ConexionDB.getInstancia().preparar(c, "{call sp_Rol_Listar}");
              ResultSet rs = cs.executeQuery()) {
             while (rs.next()) {
                 lista.add(new Rol(rs.getInt("IdRol"), rs.getString("Nombre")));

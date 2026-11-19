@@ -249,3 +249,328 @@ BEGIN
     VALUES (@IdUsuario, @Accion, @Tabla, @IdRegistro, @Detalle);
 END
 GO
+
+CREATE OR ALTER PROCEDURE dbo.sp_Bitacora_Listar
+    @Username NVARCHAR(30), @Accion NVARCHAR(30),
+    @Desde DATE, @Hasta DATE
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SELECT b.IdBitacora, u.Username, b.Accion, b.Tabla, b.IdRegistro, b.Fecha, b.Detalle
+    FROM dbo.Bitacora b
+    INNER JOIN dbo.Usuario u ON u.IdUsuario = b.IdUsuario
+    WHERE (@Username IS NULL OR u.Username LIKE '%' + @Username + '%')
+      AND (@Accion IS NULL OR b.Accion = @Accion)
+      AND (@Desde IS NULL OR CAST(b.Fecha AS DATE) >= @Desde)
+      AND (@Hasta IS NULL OR CAST(b.Fecha AS DATE) <= @Hasta)
+    ORDER BY b.Fecha DESC, b.IdBitacora DESC;
+END
+GO
+
+CREATE OR ALTER PROCEDURE dbo.sp_Autobus_Listar
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SELECT IdAutobus, Placa, Marca, Modelo, Anio, Capacidad, Estado
+    FROM dbo.Autobus ORDER BY Placa;
+END
+GO
+
+CREATE OR ALTER PROCEDURE dbo.sp_Autobus_Buscar
+    @Texto NVARCHAR(30)
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SELECT IdAutobus, Placa, Marca, Modelo, Anio, Capacidad, Estado
+    FROM dbo.Autobus
+    WHERE Placa LIKE '%' + @Texto + '%'
+       OR Marca LIKE '%' + @Texto + '%'
+       OR Modelo LIKE '%' + @Texto + '%'
+    ORDER BY Placa;
+END
+GO
+
+CREATE OR ALTER PROCEDURE dbo.sp_Autobus_ListarOperativos
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SELECT IdAutobus, Placa, Marca, Modelo, Anio, Capacidad, Estado
+    FROM dbo.Autobus WHERE Estado = 'Operativo' ORDER BY Placa;
+END
+GO
+
+CREATE OR ALTER PROCEDURE dbo.sp_Autobus_Disponibles
+    @Inicio DATETIME2, @Fin DATETIME2
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SELECT a.IdAutobus, a.Placa, a.Marca, a.Modelo, a.Anio, a.Capacidad, a.Estado
+    FROM dbo.Autobus a
+    WHERE a.Estado = 'Operativo'
+      AND NOT EXISTS (
+          SELECT 1 FROM dbo.Asignacion x
+          WHERE x.IdAutobus = a.IdAutobus
+            AND x.Estado = 'Programada'
+            AND @Inicio < x.FechaFin
+            AND @Fin > x.FechaInicio
+      )
+    ORDER BY a.Placa;
+END
+GO
+
+CREATE OR ALTER PROCEDURE dbo.sp_Autobus_Insertar
+    @Placa NVARCHAR(10), @Marca NVARCHAR(40), @Modelo NVARCHAR(40),
+    @Anio INT, @Capacidad INT, @Estado NVARCHAR(15)
+AS
+BEGIN
+    SET NOCOUNT ON;
+    INSERT INTO dbo.Autobus (Placa, Marca, Modelo, Anio, Capacidad, Estado)
+    VALUES (@Placa, @Marca, @Modelo, @Anio, @Capacidad, @Estado);
+    SELECT CAST(SCOPE_IDENTITY() AS INT) AS IdAutobus;
+END
+GO
+
+CREATE OR ALTER PROCEDURE dbo.sp_Autobus_Actualizar
+    @IdAutobus INT, @Placa NVARCHAR(10), @Marca NVARCHAR(40), @Modelo NVARCHAR(40),
+    @Anio INT, @Capacidad INT, @Estado NVARCHAR(15)
+AS
+BEGIN
+    SET NOCOUNT ON;
+    UPDATE dbo.Autobus
+    SET Placa = @Placa, Marca = @Marca, Modelo = @Modelo,
+        Anio = @Anio, Capacidad = @Capacidad, Estado = @Estado
+    WHERE IdAutobus = @IdAutobus;
+END
+GO
+
+CREATE OR ALTER PROCEDURE dbo.sp_Autobus_CambiarEstado
+    @IdAutobus INT, @Estado NVARCHAR(15)
+AS
+BEGIN
+    SET NOCOUNT ON;
+    UPDATE dbo.Autobus SET Estado = @Estado WHERE IdAutobus = @IdAutobus;
+END
+GO
+
+CREATE OR ALTER PROCEDURE dbo.sp_Ruta_Listar
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SELECT IdRuta, Codigo, Origen, Destino, DistanciaKm, DuracionMin, Activo
+    FROM dbo.Ruta ORDER BY Codigo;
+END
+GO
+
+CREATE OR ALTER PROCEDURE dbo.sp_Ruta_Buscar
+    @Texto NVARCHAR(30)
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SELECT IdRuta, Codigo, Origen, Destino, DistanciaKm, DuracionMin, Activo
+    FROM dbo.Ruta
+    WHERE Codigo LIKE '%' + @Texto + '%'
+       OR Origen LIKE '%' + @Texto + '%'
+       OR Destino LIKE '%' + @Texto + '%'
+    ORDER BY Codigo;
+END
+GO
+
+CREATE OR ALTER PROCEDURE dbo.sp_Ruta_ListarActivas
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SELECT IdRuta, Codigo, Origen, Destino, DistanciaKm, DuracionMin, Activo
+    FROM dbo.Ruta WHERE Activo = 1 ORDER BY Codigo;
+END
+GO
+
+CREATE OR ALTER PROCEDURE dbo.sp_Ruta_Insertar
+    @Codigo NVARCHAR(10), @Origen NVARCHAR(60), @Destino NVARCHAR(60),
+    @DistanciaKm DECIMAL(8,2), @DuracionMin INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    INSERT INTO dbo.Ruta (Codigo, Origen, Destino, DistanciaKm, DuracionMin)
+    VALUES (@Codigo, @Origen, @Destino, @DistanciaKm, @DuracionMin);
+    SELECT CAST(SCOPE_IDENTITY() AS INT) AS IdRuta;
+END
+GO
+
+CREATE OR ALTER PROCEDURE dbo.sp_Ruta_Actualizar
+    @IdRuta INT, @Codigo NVARCHAR(10), @Origen NVARCHAR(60), @Destino NVARCHAR(60),
+    @DistanciaKm DECIMAL(8,2), @DuracionMin INT, @Activo BIT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    UPDATE dbo.Ruta
+    SET Codigo = @Codigo, Origen = @Origen, Destino = @Destino,
+        DistanciaKm = @DistanciaKm, DuracionMin = @DuracionMin, Activo = @Activo
+    WHERE IdRuta = @IdRuta;
+END
+GO
+
+CREATE OR ALTER PROCEDURE dbo.sp_Ruta_Desactivar
+    @IdRuta INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    UPDATE dbo.Ruta SET Activo = 0 WHERE IdRuta = @IdRuta;
+END
+GO
+
+CREATE OR ALTER PROCEDURE dbo.sp_Asignacion_Listar
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SELECT a.IdAsignacion, a.IdConductor, a.IdAutobus, a.IdRuta,
+           a.FechaInicio, a.FechaFin, a.Estado,
+           k.Nombre + ' ' + k.Apellido AS NombreConductor,
+           b.Placa AS PlacaAutobus,
+           r.Codigo AS CodigoRuta
+    FROM dbo.Asignacion a
+    INNER JOIN dbo.Conductor k ON k.IdConductor = a.IdConductor
+    INNER JOIN dbo.Autobus b ON b.IdAutobus = a.IdAutobus
+    INNER JOIN dbo.Ruta r ON r.IdRuta = a.IdRuta
+    ORDER BY a.FechaInicio DESC;
+END
+GO
+
+CREATE OR ALTER PROCEDURE dbo.sp_Asignacion_Buscar
+    @Texto NVARCHAR(60)
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SELECT a.IdAsignacion, a.IdConductor, a.IdAutobus, a.IdRuta,
+           a.FechaInicio, a.FechaFin, a.Estado,
+           k.Nombre + ' ' + k.Apellido AS NombreConductor,
+           b.Placa AS PlacaAutobus,
+           r.Codigo AS CodigoRuta
+    FROM dbo.Asignacion a
+    INNER JOIN dbo.Conductor k ON k.IdConductor = a.IdConductor
+    INNER JOIN dbo.Autobus b ON b.IdAutobus = a.IdAutobus
+    INNER JOIN dbo.Ruta r ON r.IdRuta = a.IdRuta
+    WHERE k.Cedula LIKE '%' + @Texto + '%'
+       OR k.Nombre LIKE '%' + @Texto + '%'
+       OR k.Apellido LIKE '%' + @Texto + '%'
+       OR b.Placa LIKE '%' + @Texto + '%'
+       OR r.Codigo LIKE '%' + @Texto + '%'
+    ORDER BY a.FechaInicio DESC;
+END
+GO
+
+CREATE OR ALTER PROCEDURE dbo.sp_Asignacion_Insertar
+    @IdConductor INT, @IdAutobus INT, @IdRuta INT,
+    @FechaInicio DATETIME2, @FechaFin DATETIME2,
+    @Estado NVARCHAR(15), @IdUsuarioRegistro INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    INSERT INTO dbo.Asignacion
+        (IdConductor, IdAutobus, IdRuta, FechaInicio, FechaFin, Estado, IdUsuarioRegistro)
+    VALUES
+        (@IdConductor, @IdAutobus, @IdRuta, @FechaInicio, @FechaFin, @Estado, @IdUsuarioRegistro);
+    SELECT CAST(SCOPE_IDENTITY() AS INT) AS IdAsignacion;
+END
+GO
+
+CREATE OR ALTER PROCEDURE dbo.sp_Asignacion_Actualizar
+    @IdAsignacion INT, @IdConductor INT, @IdAutobus INT, @IdRuta INT,
+    @FechaInicio DATETIME2, @FechaFin DATETIME2, @Estado NVARCHAR(15)
+AS
+BEGIN
+    SET NOCOUNT ON;
+    UPDATE dbo.Asignacion
+    SET IdConductor = @IdConductor, IdAutobus = @IdAutobus, IdRuta = @IdRuta,
+        FechaInicio = @FechaInicio, FechaFin = @FechaFin, Estado = @Estado
+    WHERE IdAsignacion = @IdAsignacion;
+END
+GO
+
+CREATE OR ALTER PROCEDURE dbo.sp_Asignacion_Cancelar
+    @IdAsignacion INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    UPDATE dbo.Asignacion SET Estado = 'Cancelada' WHERE IdAsignacion = @IdAsignacion;
+END
+GO
+
+CREATE OR ALTER PROCEDURE dbo.sp_Asignacion_ConductorOcupado
+    @IdConductor INT, @Inicio DATETIME2, @Fin DATETIME2, @IdExcluido INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SELECT COUNT(*) AS Total
+    FROM dbo.Asignacion
+    WHERE IdConductor = @IdConductor
+      AND IdAsignacion <> @IdExcluido
+      AND Estado = 'Programada'
+      AND @Inicio < FechaFin
+      AND @Fin > FechaInicio;
+END
+GO
+
+CREATE OR ALTER PROCEDURE dbo.sp_Asignacion_AutobusOcupado
+    @IdAutobus INT, @Inicio DATETIME2, @Fin DATETIME2, @IdExcluido INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SELECT COUNT(*) AS Total
+    FROM dbo.Asignacion
+    WHERE IdAutobus = @IdAutobus
+      AND IdAsignacion <> @IdExcluido
+      AND Estado = 'Programada'
+      AND @Inicio < FechaFin
+      AND @Fin > FechaInicio;
+END
+GO
+
+CREATE OR ALTER PROCEDURE dbo.sp_Asignacion_ContarDelDia
+    @Dia DATE
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SELECT COUNT(*) AS Total
+    FROM dbo.Asignacion
+    WHERE CAST(FechaInicio AS DATE) = @Dia
+      AND Estado <> 'Cancelada';
+END
+GO
+
+IF NOT EXISTS (SELECT 1 FROM sys.check_constraints WHERE name = 'CK_Autobus_CapacidadMaxima')
+    ALTER TABLE dbo.Autobus ADD CONSTRAINT CK_Autobus_CapacidadMaxima CHECK (Capacidad BETWEEN 1 AND 200);
+GO
+
+IF NOT EXISTS (SELECT 1 FROM sys.check_constraints WHERE name = 'CK_Ruta_DestinoDiferente')
+    ALTER TABLE dbo.Ruta ADD CONSTRAINT CK_Ruta_DestinoDiferente CHECK (LTRIM(RTRIM(Destino)) <> LTRIM(RTRIM(Origen)));
+GO
+
+IF NOT EXISTS (SELECT 1 FROM sys.check_constraints WHERE name = 'CK_Ruta_DistanciaMaxima')
+    ALTER TABLE dbo.Ruta ADD CONSTRAINT CK_Ruta_DistanciaMaxima CHECK (DistanciaKm BETWEEN 0.01 AND 999999.99);
+GO
+
+IF NOT EXISTS (SELECT 1 FROM sys.check_constraints WHERE name = 'CK_Ruta_DuracionMaxima')
+    ALTER TABLE dbo.Ruta ADD CONSTRAINT CK_Ruta_DuracionMaxima CHECK (DuracionMin BETWEEN 1 AND 1440);
+GO
+
+CREATE OR ALTER TRIGGER dbo.TR_Asignacion_Solape
+ON dbo.Asignacion
+AFTER INSERT, UPDATE
+AS
+BEGIN
+    SET NOCOUNT ON;
+    IF EXISTS (
+        SELECT 1
+        FROM inserted i
+        INNER JOIN dbo.Asignacion a ON a.IdAsignacion <> i.IdAsignacion
+        WHERE i.Estado = N'Programada'
+          AND a.Estado = N'Programada'
+          AND (i.IdConductor = a.IdConductor OR i.IdAutobus = a.IdAutobus)
+          AND i.FechaInicio < a.FechaFin
+          AND i.FechaFin > a.FechaInicio
+    )
+    BEGIN
+        ;THROW 50001, 'El conductor o el autobus ya tiene una asignacion programada en ese horario.', 1;
+    END
+END
+GO

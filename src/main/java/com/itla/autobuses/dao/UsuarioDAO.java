@@ -14,7 +14,7 @@ public class UsuarioDAO {
 
     public int contar() throws SQLException {
         try (Connection c = ConexionDB.getInstancia().getConexion();
-             CallableStatement cs = c.prepareCall("{call sp_Usuario_Contar}");
+             CallableStatement cs = ConexionDB.getInstancia().preparar(c, "{call sp_Usuario_Contar}");
              ResultSet rs = cs.executeQuery()) {
             return rs.next() ? rs.getInt("Total") : 0;
         }
@@ -22,7 +22,7 @@ public class UsuarioDAO {
 
     public Usuario obtenerPorUsername(String username) throws SQLException {
         try (Connection c = ConexionDB.getInstancia().getConexion();
-             CallableStatement cs = c.prepareCall("{call sp_Usuario_ObtenerPorUsername(?)}")) {
+             CallableStatement cs = ConexionDB.getInstancia().preparar(c, "{call sp_Usuario_ObtenerPorUsername(?)}")) {
             cs.setString(1, username);
             try (ResultSet rs = cs.executeQuery()) {
                 return rs.next() ? mapear(rs) : null;
@@ -33,7 +33,7 @@ public class UsuarioDAO {
     public List<Usuario> listar() throws SQLException {
         List<Usuario> lista = new ArrayList<>();
         try (Connection c = ConexionDB.getInstancia().getConexion();
-             CallableStatement cs = c.prepareCall("{call sp_Usuario_Listar}");
+             CallableStatement cs = ConexionDB.getInstancia().preparar(c, "{call sp_Usuario_Listar}");
              ResultSet rs = cs.executeQuery()) {
             while (rs.next()) {
                 lista.add(mapear(rs));
@@ -44,7 +44,7 @@ public class UsuarioDAO {
 
     public int insertar(Usuario u) throws SQLException {
         try (Connection c = ConexionDB.getInstancia().getConexion();
-             CallableStatement cs = c.prepareCall("{call sp_Usuario_Insertar(?,?,?,?)}")) {
+             CallableStatement cs = ConexionDB.getInstancia().preparar(c, "{call sp_Usuario_Insertar(?,?,?,?)}")) {
             cs.setString(1, u.getUsername());
             cs.setString(2, u.getPasswordHash());
             cs.setString(3, u.getSalt());
@@ -57,7 +57,7 @@ public class UsuarioDAO {
 
     public void actualizar(int idUsuario, int idRol, boolean activo) throws SQLException {
         try (Connection c = ConexionDB.getInstancia().getConexion();
-             CallableStatement cs = c.prepareCall("{call sp_Usuario_Actualizar(?,?,?)}")) {
+             CallableStatement cs = ConexionDB.getInstancia().preparar(c, "{call sp_Usuario_Actualizar(?,?,?)}")) {
             cs.setInt(1, idUsuario);
             cs.setInt(2, idRol);
             cs.setBoolean(3, activo);
@@ -67,7 +67,7 @@ public class UsuarioDAO {
 
     public void cambiarPassword(int idUsuario, String hash, String salt) throws SQLException {
         try (Connection c = ConexionDB.getInstancia().getConexion();
-             CallableStatement cs = c.prepareCall("{call sp_Usuario_CambiarPassword(?,?,?)}")) {
+             CallableStatement cs = ConexionDB.getInstancia().preparar(c, "{call sp_Usuario_CambiarPassword(?,?,?)}")) {
             cs.setInt(1, idUsuario);
             cs.setString(2, hash);
             cs.setString(3, salt);
@@ -77,7 +77,7 @@ public class UsuarioDAO {
 
     public void desactivar(int idUsuario) throws SQLException {
         try (Connection c = ConexionDB.getInstancia().getConexion();
-             CallableStatement cs = c.prepareCall("{call sp_Usuario_Eliminar(?)}")) {
+             CallableStatement cs = ConexionDB.getInstancia().preparar(c, "{call sp_Usuario_Eliminar(?)}")) {
             cs.setInt(1, idUsuario);
             cs.execute();
         }

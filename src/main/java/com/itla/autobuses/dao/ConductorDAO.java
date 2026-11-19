@@ -16,7 +16,7 @@ public class ConductorDAO {
     public List<Conductor> listar() throws SQLException {
         List<Conductor> lista = new ArrayList<>();
         try (Connection c = ConexionDB.getInstancia().getConexion();
-             CallableStatement cs = c.prepareCall("{call sp_Conductor_Listar}");
+             CallableStatement cs = ConexionDB.getInstancia().preparar(c, "{call sp_Conductor_Listar}");
              ResultSet rs = cs.executeQuery()) {
             while (rs.next()) {
                 lista.add(mapear(rs));
@@ -28,7 +28,7 @@ public class ConductorDAO {
     public List<Conductor> buscar(String texto) throws SQLException {
         List<Conductor> lista = new ArrayList<>();
         try (Connection c = ConexionDB.getInstancia().getConexion();
-             CallableStatement cs = c.prepareCall("{call sp_Conductor_Buscar(?)}")) {
+             CallableStatement cs = ConexionDB.getInstancia().preparar(c, "{call sp_Conductor_Buscar(?)}")) {
             cs.setString(1, texto);
             try (ResultSet rs = cs.executeQuery()) {
                 while (rs.next()) {
@@ -41,7 +41,7 @@ public class ConductorDAO {
 
     public int insertar(Conductor k) throws SQLException {
         try (Connection c = ConexionDB.getInstancia().getConexion();
-             CallableStatement cs = c.prepareCall("{call sp_Conductor_Insertar(?,?,?,?,?,?,?)}")) {
+             CallableStatement cs = ConexionDB.getInstancia().preparar(c, "{call sp_Conductor_Insertar(?,?,?,?,?,?,?)}")) {
             cs.setString(1, k.getCedula());
             cs.setString(2, k.getNombre());
             cs.setString(3, k.getApellido());
@@ -57,7 +57,7 @@ public class ConductorDAO {
 
     public void actualizar(Conductor k) throws SQLException {
         try (Connection c = ConexionDB.getInstancia().getConexion();
-             CallableStatement cs = c.prepareCall("{call sp_Conductor_Actualizar(?,?,?,?,?,?,?,?)}")) {
+             CallableStatement cs = ConexionDB.getInstancia().preparar(c, "{call sp_Conductor_Actualizar(?,?,?,?,?,?,?,?)}")) {
             cs.setInt(1, k.getId());
             cs.setString(2, k.getCedula());
             cs.setString(3, k.getNombre());
@@ -72,7 +72,7 @@ public class ConductorDAO {
 
     public void desactivar(int idConductor) throws SQLException {
         try (Connection c = ConexionDB.getInstancia().getConexion();
-             CallableStatement cs = c.prepareCall("{call sp_Conductor_Eliminar(?)}")) {
+             CallableStatement cs = ConexionDB.getInstancia().preparar(c, "{call sp_Conductor_Eliminar(?)}")) {
             cs.setInt(1, idConductor);
             cs.execute();
         }
