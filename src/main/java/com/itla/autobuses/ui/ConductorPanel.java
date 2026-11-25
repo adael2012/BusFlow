@@ -1,5 +1,7 @@
 package com.itla.autobuses.ui;
 
+import com.itla.autobuses.service.FabricaServicios;
+
 import com.itla.autobuses.model.Conductor;
 import com.itla.autobuses.service.ConductorService;
 import com.itla.autobuses.util.NegocioException;
@@ -29,7 +31,7 @@ import java.util.List;
 
 public class ConductorPanel extends JPanel {
 
-    private final ConductorService servicio = new ConductorService();
+    private final ConductorService servicio = FabricaServicios.conductores();
     private List<Conductor> datos = new ArrayList<>();
     private Conductor actual = new Conductor();
 

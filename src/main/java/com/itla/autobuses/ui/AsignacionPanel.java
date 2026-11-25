@@ -1,5 +1,7 @@
 package com.itla.autobuses.ui;
 
+import com.itla.autobuses.service.FabricaServicios;
+
 import com.itla.autobuses.model.Asignacion;
 import com.itla.autobuses.model.Autobus;
 import com.itla.autobuses.model.Conductor;
@@ -44,10 +46,10 @@ public class AsignacionPanel extends JPanel {
 
     private static final DateTimeFormatter FORMATO = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
-    private final AsignacionService servicio = new AsignacionService();
-    private final ConductorService conductores = new ConductorService();
-    private final AutobusService autobuses = new AutobusService();
-    private final RutaService rutas = new RutaService();
+    private final AsignacionService servicio = FabricaServicios.asignaciones();
+    private final ConductorService conductores = FabricaServicios.conductores();
+    private final AutobusService autobuses = FabricaServicios.autobuses();
+    private final RutaService rutas = FabricaServicios.rutas();
 
     private List<Asignacion> datos = new ArrayList<>();
     private Asignacion actual = new Asignacion();

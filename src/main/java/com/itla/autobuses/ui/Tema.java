@@ -3,6 +3,7 @@ package com.itla.autobuses.ui;
 import javax.swing.BorderFactory;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
@@ -34,6 +35,7 @@ import java.awt.Frame;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GraphicsEnvironment;
+import java.awt.Image;
 import java.awt.Insets;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
@@ -66,6 +68,16 @@ public final class Tema {
     private static final String FAMILIA = resolverFamilia();
 
     private Tema() { }
+
+    public static ImageIcon logo(int ancho, int alto) {
+        java.net.URL recurso = Tema.class.getResource("/logo-busflow.png");
+        if (recurso == null) {
+            return null;
+        }
+        Image imagen = new ImageIcon(recurso).getImage()
+                .getScaledInstance(ancho, alto, Image.SCALE_SMOOTH);
+        return new ImageIcon(imagen);
+    }
 
     private static String resolverFamilia() {
         String[] instaladas = GraphicsEnvironment.getLocalGraphicsEnvironment()

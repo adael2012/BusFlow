@@ -1,5 +1,7 @@
 package com.itla.autobuses.ui;
 
+import com.itla.autobuses.service.FabricaServicios;
+
 import com.itla.autobuses.model.Asignacion;
 import com.itla.autobuses.model.Autobus;
 import com.itla.autobuses.model.Conductor;
@@ -20,8 +22,8 @@ public class DisponibilidadPanel extends JPanel {
 
     private static final DateTimeFormatter FORMATO = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
-    private final AsignacionService asignaciones = new AsignacionService();
-    private final AutobusService autobuses = new AutobusService();
+    private final AsignacionService asignaciones = FabricaServicios.asignaciones();
+    private final AutobusService autobuses = FabricaServicios.autobuses();
 
     private final CampoFechaHora txtInicio = new CampoFechaHora();
     private final CampoFechaHora txtFin = new CampoFechaHora();

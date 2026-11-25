@@ -1,5 +1,7 @@
 package com.itla.autobuses.ui;
 
+import com.itla.autobuses.service.FabricaServicios;
+
 import com.itla.autobuses.model.EntradaBitacora;
 import com.itla.autobuses.service.BitacoraService;
 import com.itla.autobuses.util.NegocioException;
@@ -13,7 +15,7 @@ import java.util.List;
 
 public class BitacoraPanel extends JPanel {
 
-    private final BitacoraService servicio = new BitacoraService();
+    private final BitacoraService servicio = FabricaServicios.bitacora();
     private final JTextField txtUsuario = Tema.campo("Usuario");
     private final JTextField txtAccion = Tema.campo("Acción");
     private final CampoFechaHora txtDesde = new CampoFechaHora(false);

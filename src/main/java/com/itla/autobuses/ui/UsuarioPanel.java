@@ -1,5 +1,7 @@
 package com.itla.autobuses.ui;
 
+import com.itla.autobuses.service.FabricaServicios;
+
 import com.itla.autobuses.model.Rol;
 import com.itla.autobuses.model.Usuario;
 import com.itla.autobuses.service.UsuarioService;
@@ -29,13 +31,13 @@ import java.util.List;
 
 public class UsuarioPanel extends JPanel {
 
-    private final UsuarioService servicio = new UsuarioService();
+    private final UsuarioService servicio = FabricaServicios.usuarios();
     private List<Usuario> datos = new ArrayList<>();
     private Usuario actual;
 
     private final JTextField txtBuscar = Tema.campo("Escribe para buscar");
     private final JTextField txtUsername = Tema.campo("Nombre de usuario");
-    private final javax.swing.JPasswordField txtClave = Tema.clave("Minimo 8 caracteres");
+    private final javax.swing.JPasswordField txtClave = Tema.clave("Mínimo 8 caracteres");
     private final JComboBox<Rol> cmbRol = new JComboBox<>();
     private final JCheckBox chkActivo = new JCheckBox("Activo", true);
 
@@ -220,7 +222,7 @@ public class UsuarioPanel extends JPanel {
             aviso("Selecciona un usuario de la tabla.");
             return;
         }
-        javax.swing.JPasswordField campo = Tema.clave("Minimo 8 caracteres");
+        javax.swing.JPasswordField campo = Tema.clave("Mínimo 8 caracteres");
         int r = JOptionPane.showConfirmDialog(this, campo,
                 "Nueva contraseña para " + actual.getUsername(),
                 JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);

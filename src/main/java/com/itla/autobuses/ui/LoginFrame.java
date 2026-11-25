@@ -1,5 +1,7 @@
 package com.itla.autobuses.ui;
 
+import com.itla.autobuses.service.FabricaServicios;
+
 import com.itla.autobuses.service.AuthService;
 import com.itla.autobuses.util.NegocioException;
 
@@ -31,10 +33,10 @@ public class LoginFrame extends JFrame {
     private final JCheckBox chkMostrar = new JCheckBox("Mostrar contraseña");
     private final JLabel lblError = new JLabel(" ");
     private final JButton btnIngresar = Tema.boton("Ingresar", Iconos.de("check", Color.WHITE));
-    private final AuthService auth = new AuthService();
+    private final AuthService auth = FabricaServicios.auth();
 
     public LoginFrame() {
-        super("Ruta Control - Iniciar sesión");
+        super("BusFlow - Iniciar sesión");
         setDefaultCloseOperation(EXIT_ON_CLOSE);
 
         JPanel raiz = new JPanel(new BorderLayout());
@@ -71,31 +73,26 @@ public class LoginFrame extends JFrame {
 
         JPanel identidad = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
         identidad.setOpaque(false);
-        JLabel etiqueta = new JLabel("RUTA");
-        etiqueta.setFont(Tema.fuente(11, Font.BOLD));
+        JLabel simbolo = new JLabel(Tema.logo(36, 36));
+        identidad.add(simbolo);
+        JLabel etiqueta = new JLabel("BUSFLOW");
+        etiqueta.setFont(Tema.fuente(12, Font.BOLD));
         etiqueta.setForeground(Tema.VERDE_CLARO);
-        etiqueta.setBorder(BorderFactory.createEmptyBorder(4, 8, 4, 8));
-        etiqueta.setOpaque(true);
-        etiqueta.setBackground(new Color(255, 255, 255, 20));
         identidad.add(etiqueta);
-        JLabel sufijo = new JLabel("CONTROL DE AUTOBUSES");
-        sufijo.setFont(Tema.fuente(10, Font.BOLD));
-        sufijo.setForeground(Tema.MENU_TEXTO);
-        identidad.add(sufijo);
 
         JPanel textos = new JPanel();
         textos.setLayout(new BoxLayout(textos, BoxLayout.Y_AXIS));
         textos.setOpaque(false);
-        textos.setBorder(BorderFactory.createEmptyBorder(54, 0, 0, 0));
-        textos.add(linea("CONTROL DE", 28, Color.WHITE));
-        textos.add(linea("AUTOBUSES", 28, Color.WHITE));
+        textos.setBorder(BorderFactory.createEmptyBorder(40, 0, 0, 0));
+        textos.add(linea("BUSFLOW", 30, Color.WHITE));
+        textos.add(linea("Control de autobuses", 15, Tema.VERDE_CLARO));
         textos.add(linea("Administración de transporte", 13, Tema.VERDE_CLARO));
         textos.add(linea("Conductores, unidades y rutas", 13, Tema.VERDE_CLARO));
 
-        JPanel centro = new JPanel(new BorderLayout(0, 26));
+        JPanel centro = new JPanel(new BorderLayout(0, 16));
         centro.setOpaque(false);
         centro.add(textos, BorderLayout.NORTH);
-        centro.add(dibujoBus(), BorderLayout.CENTER);
+        centro.add(logoCentral(), BorderLayout.CENTER);
 
         JLabel pie = new JLabel("Acceso protegido - Intentos controlados");
         pie.setFont(Tema.fuente(10));
@@ -115,41 +112,12 @@ public class LoginFrame extends JFrame {
         return l;
     }
 
-    private JPanel dibujoBus() {
-        JPanel p = new JPanel() {
-            @Override
-            protected void paintComponent(Graphics g) {
-                super.paintComponent(g);
-                Graphics2D g2 = (Graphics2D) g.create();
-                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                int x = 20;
-                int y = 24;
-                int w = getWidth() - 40;
-                int h = 68;
-                g2.setColor(Tema.VERDE);
-                g2.fillRoundRect(x, y, w, h, 22, 22);
-                g2.setColor(new Color(255, 255, 255, 55));
-                g2.fillRect(x + 12, y + 11, w - 24, 3);
-                int ancho = (w - 62) / 5;
-                for (int i = 0; i < 5; i++) {
-                    g2.setColor(new Color(226, 240, 234));
-                    g2.fillRoundRect(x + 14 + i * (ancho + 8), y + 19, ancho, 23, 5, 5);
-                }
-                g2.setColor(new Color(11, 43, 32));
-                g2.fillOval(x + 30, y + h - 12, 22, 22);
-                g2.fillOval(x + w - 52, y + h - 12, 22, 22);
-                g2.setColor(Tema.VERDE_CLARO);
-                g2.fillOval(x + 36, y + h - 6, 10, 10);
-                g2.fillOval(x + w - 46, y + h - 6, 10, 10);
-                g2.dispose();
-            }
-
-            @Override
-            public Dimension getPreferredSize() {
-                return new Dimension(320, 116);
-            }
-        };
+    private JPanel logoCentral() {
+        JPanel p = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
         p.setOpaque(false);
+        JLabel logo = new JLabel(Tema.logo(210, 210));
+        logo.setHorizontalAlignment(JLabel.CENTER);
+        p.add(logo);
         return p;
     }
 
@@ -209,6 +177,17 @@ public class LoginFrame extends JFrame {
         g.insets = new Insets(4, 0, 0, 0);
         btnIngresar.setPreferredSize(new Dimension(280, 40));
         p.add(btnIngresar, g);
+
+        if (FabricaServicios.esDemo()) {
+            g.gridy = 9;
+            g.insets = new Insets(14, 0, 0, 0);
+            JLabel demostracion = new JLabel(
+                    "<html><center>Modo demostración<br>admin / Admin123!</center></html>");
+            demostracion.setFont(Tema.fuente(10));
+            demostracion.setForeground(Tema.VERDE);
+            demostracion.setHorizontalAlignment(JLabel.CENTER);
+            p.add(demostracion, g);
+        }
         return p;
     }
 

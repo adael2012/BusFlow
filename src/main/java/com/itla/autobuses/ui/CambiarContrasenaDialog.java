@@ -1,5 +1,7 @@
 package com.itla.autobuses.ui;
 
+import com.itla.autobuses.service.FabricaServicios;
+
 import com.itla.autobuses.service.UsuarioService;
 import com.itla.autobuses.util.NegocioException;
 import com.itla.autobuses.util.Sesion;
@@ -24,7 +26,7 @@ public class CambiarContrasenaDialog {
     private final javax.swing.JPasswordField txtNueva = Tema.clave("Minimo 8 caracteres");
     private final javax.swing.JPasswordField txtRepetir = Tema.clave("Repite la contraseña");
     private final JCheckBox chkMostrar = new JCheckBox("Mostrar contraseñas");
-    private final UsuarioService servicio = new UsuarioService();
+    private final UsuarioService servicio = FabricaServicios.usuarios();
 
     public CambiarContrasenaDialog(Frame padre) {
         JPanel form = new JPanel(new GridLayout(4, 2, 10, 10));

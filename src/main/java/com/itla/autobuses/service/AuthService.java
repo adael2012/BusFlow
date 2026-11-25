@@ -43,7 +43,7 @@ public class AuthService {
             }
             if (!u.isActivo()) {
                 registrarFallo(clave);
-                throw new NegocioException("Este usuario esta desactivado.");
+                throw new NegocioException("Este usuario está desactivado.");
             }
             INTENTOS.remove(clave);
             Sesion.getInstancia().iniciar(u);

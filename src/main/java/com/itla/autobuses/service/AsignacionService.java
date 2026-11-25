@@ -157,14 +157,14 @@ public class AsignacionService {
     private void validarDisponibilidad(Asignacion a) throws SQLException, NegocioException {
         Conductor k = buscarConductor(a.getIdConductor());
         if (k == null || !k.isActivo()) {
-            throw new NegocioException("El conductor seleccionado no existe o esta inactivo.");
+            throw new NegocioException("El conductor seleccionado no existe o está inactivo.");
         }
         if (!k.licenciaVigente() || k.getVencimientoLicencia().isBefore(a.getFechaFin().toLocalDate())) {
-            throw new NegocioException("La licencia del conductor no esta vigente durante la asignación.");
+            throw new NegocioException("La licencia del conductor no está vigente durante la asignación.");
         }
         Autobus b = buscarAutobus(a.getIdAutobus());
         if (b == null || !b.estaOperativo()) {
-            throw new NegocioException("El autobús seleccionado no esta operativo.");
+            throw new NegocioException("El autobús seleccionado no está operativo.");
         }
         Ruta r = buscarRuta(a.getIdRuta());
         if (r == null || !r.isActivo()) {

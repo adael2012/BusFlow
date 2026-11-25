@@ -5,10 +5,10 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.itla</groupId>
-    <artifactId>control-autobuses</artifactId>
+    <artifactId>busflow</artifactId>
     <version>1.0.0</version>
     <packaging>jar</packaging>
-    <name>Sistema de Control de Autobuses</name>
+    <name>BusFlow</name>
 
     <properties>
         <maven.compiler.source>17</maven.compiler.source>

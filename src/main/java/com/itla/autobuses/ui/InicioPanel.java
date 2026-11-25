@@ -1,5 +1,7 @@
 package com.itla.autobuses.ui;
 
+import com.itla.autobuses.service.FabricaServicios;
+
 import com.itla.autobuses.model.Conductor;
 import com.itla.autobuses.model.EntradaBitacora;
 import com.itla.autobuses.model.Resumen;
@@ -29,8 +31,8 @@ public class InicioPanel extends JPanel {
 
     private static final DateTimeFormatter FORMATO = DateTimeFormatter.ofPattern("dd/MM HH:mm");
 
-    private final PanelService servicio = new PanelService();
-    private final BitacoraService bitacora = new BitacoraService();
+    private final PanelService servicio = FabricaServicios.panel();
+    private final BitacoraService bitacora = FabricaServicios.bitacora();
     private final JPanel areas = new JPanel(new GridLayout(1, 2, 12, 12));
     private final JPanel tarjetasPanel = tarjetas();
     private final JLabel subtitulo = new JLabel("Cargando indicadores...");
@@ -97,7 +99,7 @@ public class InicioPanel extends JPanel {
                         datos.errorActividad = e.getMessage();
                     }
                 } else {
-                    datos.errorActividad = "La actividad reciente esta disponible solo para el administrador.";
+                    datos.errorActividad = "La actividad reciente está disponible solo para el administrador.";
                 }
                 return datos;
             }

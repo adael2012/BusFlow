@@ -1,5 +1,7 @@
 package com.itla.autobuses.ui;
 
+import com.itla.autobuses.service.FabricaServicios;
+
 import com.itla.autobuses.model.Ruta;
 import com.itla.autobuses.service.RutaService;
 import com.itla.autobuses.util.NegocioException;
@@ -28,7 +30,7 @@ import java.util.List;
 
 public class RutaPanel extends JPanel {
 
-    private final RutaService servicio = new RutaService();
+    private final RutaService servicio = FabricaServicios.rutas();
     private List<Ruta> datos = new ArrayList<>();
     private Ruta actual = new Ruta();
 

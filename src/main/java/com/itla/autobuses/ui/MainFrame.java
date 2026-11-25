@@ -1,8 +1,9 @@
 package com.itla.autobuses.ui;
 
+import com.itla.autobuses.service.FabricaServicios;
+
 import com.itla.autobuses.model.Usuario;
 import com.itla.autobuses.service.AuthService;
-import com.itla.autobuses.util.ConexionDB;
 import com.itla.autobuses.util.Sesion;
 
 import javax.swing.BorderFactory;
@@ -29,7 +30,7 @@ import java.util.Map;
 
 public class MainFrame extends JFrame {
 
-    private final AuthService auth = new AuthService();
+    private final AuthService auth = FabricaServicios.auth();
     private final Map<String, JPanel> panels = new HashMap<>();
     private final List<JButton> menu = new ArrayList<>();
     private final java.awt.CardLayout tarjetas = new java.awt.CardLayout();
@@ -37,7 +38,7 @@ public class MainFrame extends JFrame {
     private JLabel tituloSeccion;
 
     public MainFrame() {
-        super("Ruta Control - Sistema de Control de Autobuses");
+        super("BusFlow - Panel de control");
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         Usuario u = Sesion.getInstancia().getUsuario();
 
@@ -67,33 +68,13 @@ public class MainFrame extends JFrame {
 
         JPanel marca = new JPanel(new java.awt.BorderLayout(10, 0));
         marca.setOpaque(false);
-        JPanel simbolo = new JPanel() {
-            @Override
-            protected void paintComponent(Graphics g) {
-                Graphics2D g2 = (Graphics2D) g.create();
-                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                g2.setColor(Tema.VERDE);
-                g2.fillRoundRect(0, 0, getWidth(), getHeight(), 10, 10);
-                g2.setColor(java.awt.Color.WHITE);
-                g2.fillRoundRect(6, 10, getWidth() - 12, getHeight() - 20, 4, 4);
-                g2.setColor(Tema.VERDE);
-                g2.fillOval(9, getHeight() - 12, 5, 5);
-                g2.fillOval(getWidth() - 14, getHeight() - 12, 5, 5);
-                g2.dispose();
-            }
-
-            @Override
-            public Dimension getPreferredSize() {
-                return new Dimension(34, 30);
-            }
-        };
-        simbolo.setOpaque(false);
+        JLabel simbolo = new JLabel(Tema.logo(38, 38));
         JPanel textos = new JPanel(new java.awt.GridLayout(2, 1));
         textos.setOpaque(false);
-        JLabel nombre = new JLabel("RUTA CONTROL");
+        JLabel nombre = new JLabel("BUSFLOW");
         nombre.setFont(Tema.fuente(13, Font.BOLD));
         nombre.setForeground(java.awt.Color.WHITE);
-        JLabel lema = new JLabel("Gestion de transporte");
+        JLabel lema = new JLabel("Control de autobuses");
         lema.setFont(Tema.fuente(10));
         lema.setForeground(Tema.MENU_TEXTO);
         textos.add(nombre);
@@ -118,7 +99,7 @@ public class MainFrame extends JFrame {
         if (u.esAdmin()) {
             seccion(nav, "SISTEMA");
             agregarItem(nav, "usuarios", "Usuarios", "usuarios", "Administra cuentas, roles y acceso");
-            agregarItem(nav, "bitácora", "Bitácora", "bitácora", "Consulta el historial de acciónes registradas");
+            agregarItem(nav, "bitácora", "Bitácora", "bitácora", "Consulta el historial de acciones registradas");
         }
 
         JPanel perfil = new JPanel(new java.awt.BorderLayout(10, 0));
@@ -210,14 +191,10 @@ public class MainFrame extends JFrame {
         tituloSeccion.setFont(Tema.fuente(16, Font.BOLD));
         tituloSeccion.setForeground(Tema.TEXTO);
 
-        boolean conectado;
-        try {
-            conectado = ConexionDB.getInstancia().probar();
-        } catch (RuntimeException ex) {
-            conectado = false;
-        }
-        JLabel estado = Tema.chip(conectado ? "Sistema activo" : "Sin conexión",
-                conectado ? Tema.EXITO : Tema.ERROR);
+        boolean activo = FabricaServicios.esDemo() || FabricaServicios.baseDisponible();
+        String textoEstado = FabricaServicios.esDemo()
+                ? "Modo demostración" : (activo ? "Sistema activo" : "Sin conexión");
+        JLabel estado = Tema.chip(textoEstado, activo ? Tema.EXITO : Tema.ERROR);
 
         JButton btnClave = Tema.botonPlano("Cambiar contraseña");
         btnClave.setIcon(Iconos.de("llave", Tema.VERDE));

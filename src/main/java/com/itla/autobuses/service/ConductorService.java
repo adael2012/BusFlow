@@ -95,7 +95,7 @@ public class ConductorService {
             throw new NegocioException("Indica la fecha de vencimiento de la licencia.");
         }
         if (k.isActivo() && !k.licenciaVigente()) {
-            throw new NegocioException("La licencia esta vencida; no se puede dejar al conductor activo.");
+            throw new NegocioException("La licencia está vencida; no se puede dejar al conductor activo.");
         }
     }
 
