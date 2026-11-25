@@ -22,7 +22,7 @@ public class BitacoraPanel extends JPanel {
     private final CampoFechaHora txtHasta = new CampoFechaHora(false);
 
     private final DefaultTableModel modelo = new DefaultTableModel(
-            new String[]{"Id", "Fecha", "Usuario", "Acción", "Tabla", "Id registro", "Detalle"}, 0) {
+            new String[]{"Id", "Fecha", "Usuario", "Acción", "Tabla", "Id registro", "Detalle", "Resultado"}, 0) {
         @Override public boolean isCellEditable(int r, int c) { return false; }
     };
     private final JTable tabla = Tema.tabla(modelo);
@@ -80,7 +80,7 @@ public class BitacoraPanel extends JPanel {
             modelo.setRowCount(0);
             for (EntradaBitacora e : datos) {
                 modelo.addRow(new Object[]{e.getId(), e.getFecha(), e.getUsername(), e.getAccion(),
-                        e.getTabla(), e.getIdRegistro(), e.getDetalle()});
+                        e.getTabla(), e.getIdRegistro(), e.getDetalle(), e.getResultado()});
             }
         } catch (NegocioException ex) {
             aviso(ex.getMessage());

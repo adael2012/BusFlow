@@ -17,8 +17,13 @@ CREATE TABLE dbo.Usuario (
     PasswordHash  NVARCHAR(100) NOT NULL,
     Salt          NVARCHAR(50)  NOT NULL,
     IdRol         INT NOT NULL REFERENCES dbo.Rol(IdRol),
-    Activo        BIT NOT NULL DEFAULT 1,
-    FechaCreacion DATETIME2 NOT NULL DEFAULT SYSDATETIME()
+    Activo            BIT NOT NULL DEFAULT 1,
+    FechaCreacion     DATETIME2 NOT NULL DEFAULT SYSDATETIME(),
+    EstadoCuenta      NVARCHAR(20) NOT NULL DEFAULT (N'Activo'),
+    FechaModificacion DATETIME2 NULL,
+    UltimoAcceso      DATETIME2 NULL,
+    Eliminado         BIT NOT NULL DEFAULT 0,
+    FechaEliminacion  DATETIME2 NULL
 );
 GO
 IF OBJECT_ID('dbo.Conductor') IS NULL
@@ -78,7 +83,8 @@ CREATE TABLE dbo.Bitacora (
     Tabla      NVARCHAR(30) NOT NULL,
     IdRegistro INT NULL,
     Fecha      DATETIME2 NOT NULL DEFAULT SYSDATETIME(),
-    Detalle    NVARCHAR(300) NULL
+    Detalle    NVARCHAR(300) NULL,
+    Resultado  NVARCHAR(20) NOT NULL DEFAULT (N'ÉXITO')
 );
 GO
 
@@ -89,6 +95,59 @@ IF NOT EXISTS (SELECT 1 FROM dbo.Rol WHERE Nombre = N'Usuario Genérico')
 IF EXISTS (SELECT 1 FROM dbo.Rol WHERE Nombre = N'Usuario Generico')
    AND NOT EXISTS (SELECT 1 FROM dbo.Rol WHERE Nombre = N'Usuario Genérico')
     UPDATE dbo.Rol SET Nombre = N'Usuario Genérico' WHERE Nombre = N'Usuario Generico';
+GO
+
+/* -------------------------------------------------------------------------
+   Migración segura y repetible para la jerarquía administrativa de BusFlow.
+   Solo agrega objetos/columnas; no borra ni recrea tablas ni datos.
+   ------------------------------------------------------------------------- */
+IF COL_LENGTH(N'dbo.Usuario', N'EstadoCuenta') IS NULL
+    ALTER TABLE dbo.Usuario ADD EstadoCuenta NVARCHAR(20) NOT NULL
+        CONSTRAINT DF_Usuario_EstadoCuenta DEFAULT (N'Activo');
+GO
+IF COL_LENGTH(N'dbo.Usuario', N'FechaModificacion') IS NULL
+    ALTER TABLE dbo.Usuario ADD FechaModificacion DATETIME2 NULL;
+GO
+IF COL_LENGTH(N'dbo.Usuario', N'UltimoAcceso') IS NULL
+    ALTER TABLE dbo.Usuario ADD UltimoAcceso DATETIME2 NULL;
+GO
+IF COL_LENGTH(N'dbo.Usuario', N'Eliminado') IS NULL
+    ALTER TABLE dbo.Usuario ADD Eliminado BIT NOT NULL
+        CONSTRAINT DF_Usuario_Eliminado DEFAULT (0);
+GO
+IF COL_LENGTH(N'dbo.Usuario', N'FechaEliminacion') IS NULL
+    ALTER TABLE dbo.Usuario ADD FechaEliminacion DATETIME2 NULL;
+GO
+IF COL_LENGTH(N'dbo.Bitacora', N'Resultado') IS NULL
+    ALTER TABLE dbo.Bitacora ADD Resultado NVARCHAR(20) NOT NULL
+        CONSTRAINT DF_Bitacora_Resultado DEFAULT (N'ÉXITO');
+GO
+IF NOT EXISTS (SELECT 1 FROM dbo.Rol WHERE Nombre = N'SUPERADMINISTRADOR')
+    INSERT INTO dbo.Rol (Nombre) VALUES (N'SUPERADMINISTRADOR');
+GO
+UPDATE dbo.Usuario SET FechaModificacion = FechaCreacion
+WHERE FechaModificacion IS NULL;
+GO
+UPDATE dbo.Usuario SET EstadoCuenta = N'Inactivo'
+WHERE Activo = 0 AND EstadoCuenta = N'Activo';
+GO
+UPDATE dbo.Usuario SET EstadoCuenta = N'Activo'
+WHERE Activo = 1 AND EstadoCuenta = N'Inactivo';
+GO
+UPDATE dbo.Usuario SET EstadoCuenta = N'Eliminado'
+WHERE Eliminado = 1 AND EstadoCuenta <> N'Eliminado';
+GO
+UPDATE u SET UltimoAcceso = (
+    SELECT MAX(b.Fecha) FROM dbo.Bitacora b
+    WHERE b.IdUsuario = u.IdUsuario AND b.Accion = N'LOGIN')
+FROM dbo.Usuario u
+WHERE u.UltimoAcceso IS NULL;
+GO
+IF NOT EXISTS (SELECT 1 FROM sys.check_constraints
+               WHERE name = N'CK_Usuario_EstadoCuenta'
+                 AND parent_object_id = OBJECT_ID(N'dbo.Usuario'))
+    ALTER TABLE dbo.Usuario ADD CONSTRAINT CK_Usuario_EstadoCuenta
+        CHECK (EstadoCuenta IN (N'Activo', N'Inactivo', N'Bloqueado', N'Eliminado'));
 GO
 
 CREATE OR ALTER PROCEDURE dbo.sp_Rol_Listar
@@ -113,7 +172,9 @@ AS
 BEGIN
     SET NOCOUNT ON;
     SELECT u.IdUsuario, u.Username, u.PasswordHash, u.Salt, u.IdRol,
-           r.Nombre AS RolNombre, u.Activo
+           r.Nombre AS RolNombre, u.Activo,
+           u.EstadoCuenta, u.FechaCreacion, u.FechaModificacion,
+           u.UltimoAcceso, u.Eliminado, u.FechaEliminacion
     FROM dbo.Usuario u INNER JOIN dbo.Rol r ON r.IdRol = u.IdRol
     WHERE u.Username = @Username;
 END
@@ -124,7 +185,9 @@ AS
 BEGIN
     SET NOCOUNT ON;
     SELECT u.IdUsuario, u.Username, u.PasswordHash, u.Salt, u.IdRol,
-           r.Nombre AS RolNombre, u.Activo
+           r.Nombre AS RolNombre, u.Activo,
+           u.EstadoCuenta, u.FechaCreacion, u.FechaModificacion,
+           u.UltimoAcceso, u.Eliminado, u.FechaEliminacion
     FROM dbo.Usuario u INNER JOIN dbo.Rol r ON r.IdRol = u.IdRol
     ORDER BY u.Username;
 END
@@ -151,8 +214,12 @@ CREATE OR ALTER PROCEDURE dbo.sp_Usuario_Actualizar
 AS
 BEGIN
     SET NOCOUNT ON;
-    UPDATE dbo.Usuario SET IdRol = @IdRol, Activo = @Activo
-    WHERE IdUsuario = @IdUsuario;
+    UPDATE dbo.Usuario
+       SET IdRol = @IdRol,
+           Activo = @Activo,
+           EstadoCuenta = CASE WHEN @Activo = 1 THEN N'Activo' ELSE N'Inactivo' END,
+           FechaModificacion = SYSDATETIME()
+     WHERE IdUsuario = @IdUsuario AND Eliminado = 0;
 END
 GO
 
@@ -163,8 +230,24 @@ CREATE OR ALTER PROCEDURE dbo.sp_Usuario_CambiarPassword
 AS
 BEGIN
     SET NOCOUNT ON;
-    UPDATE dbo.Usuario SET PasswordHash = @PasswordHash, Salt = @Salt
-    WHERE IdUsuario = @IdUsuario;
+    UPDATE dbo.Usuario
+       SET PasswordHash = @PasswordHash,
+           Salt = @Salt,
+           FechaModificacion = SYSDATETIME()
+     WHERE IdUsuario = @IdUsuario AND Eliminado = 0;
+END
+GO
+
+CREATE OR ALTER PROCEDURE dbo.sp_Usuario_Desactivar
+    @IdUsuario INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    UPDATE dbo.Usuario
+       SET Activo = 0,
+           EstadoCuenta = N'Inactivo',
+           FechaModificacion = SYSDATETIME()
+     WHERE IdUsuario = @IdUsuario;
 END
 GO
 
@@ -173,7 +256,38 @@ CREATE OR ALTER PROCEDURE dbo.sp_Usuario_Eliminar
 AS
 BEGIN
     SET NOCOUNT ON;
-    UPDATE dbo.Usuario SET Activo = 0 WHERE IdUsuario = @IdUsuario;
+    UPDATE dbo.Usuario
+       SET Activo = 0,
+           Eliminado = 1,
+           EstadoCuenta = N'Eliminado',
+           FechaEliminacion = SYSDATETIME(),
+           FechaModificacion = SYSDATETIME()
+     WHERE IdUsuario = @IdUsuario;
+END
+GO
+
+CREATE OR ALTER PROCEDURE dbo.sp_Usuario_Reactivar
+    @IdUsuario INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    UPDATE dbo.Usuario
+       SET Activo = 1,
+           Eliminado = 0,
+           EstadoCuenta = N'Activo',
+           FechaEliminacion = NULL,
+           FechaModificacion = SYSDATETIME()
+     WHERE IdUsuario = @IdUsuario;
+END
+GO
+
+CREATE OR ALTER PROCEDURE dbo.sp_Usuario_RegistrarAcceso
+    @IdUsuario INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    UPDATE dbo.Usuario SET UltimoAcceso = SYSDATETIME()
+     WHERE IdUsuario = @IdUsuario AND Eliminado = 0;
 END
 GO
 
@@ -253,13 +367,25 @@ BEGIN
 END
 GO
 
+CREATE OR ALTER PROCEDURE dbo.sp_Bitacora_InsertarSeguro
+    @IdUsuario INT, @Accion NVARCHAR(30), @Tabla NVARCHAR(30),
+    @IdRegistro INT, @Detalle NVARCHAR(300), @Resultado NVARCHAR(20)
+AS
+BEGIN
+    SET NOCOUNT ON;
+    INSERT INTO dbo.Bitacora (IdUsuario, Accion, Tabla, IdRegistro, Detalle, Resultado)
+    VALUES (@IdUsuario, @Accion, @Tabla, @IdRegistro, @Detalle, @Resultado);
+END
+GO
+
 CREATE OR ALTER PROCEDURE dbo.sp_Bitacora_Listar
     @Username NVARCHAR(30), @Accion NVARCHAR(30),
     @Desde DATE, @Hasta DATE
 AS
 BEGIN
     SET NOCOUNT ON;
-    SELECT b.IdBitacora, u.Username, b.Accion, b.Tabla, b.IdRegistro, b.Fecha, b.Detalle
+    SELECT b.IdBitacora, u.Username, b.Accion, b.Tabla, b.IdRegistro, b.Fecha, b.Detalle,
+           b.Resultado
     FROM dbo.Bitacora b
     INNER JOIN dbo.Usuario u ON u.IdUsuario = b.IdUsuario
     WHERE (@Username IS NULL OR u.Username LIKE '%' + @Username + '%')

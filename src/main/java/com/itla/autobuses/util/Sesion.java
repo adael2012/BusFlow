@@ -21,4 +21,11 @@ public final class Sesion {
     public Usuario getUsuario() { return usuario; }
     public boolean hayUsuario() { return usuario != null; }
     public boolean esAdmin() { return usuario != null && usuario.esAdmin(); }
+    public boolean esSuperadministrador() { return usuario != null && usuario.esSuperadministrador(); }
+
+    public void invalidarSi(Usuario objetivo) {
+        if (usuario != null && objetivo != null && usuario.getId() == objetivo.getId()) {
+            cerrar();
+        }
+    }
 }

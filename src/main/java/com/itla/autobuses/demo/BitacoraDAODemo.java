@@ -18,7 +18,7 @@ public class BitacoraDAODemo extends BitacoraDAO {
 
     @Override
     public void insertar(int idUsuario, String accion, String tabla,
-                         int idRegistro, String detalle) {
+                         int idRegistro, String detalle, String resultado) {
         EntradaBitacora e = new EntradaBitacora();
         e.setId(almacen.siguienteBitacora());
         e.setUsername(almacen.usuarioPorId(idUsuario) == null
@@ -27,6 +27,7 @@ public class BitacoraDAODemo extends BitacoraDAO {
         e.setTabla(tabla);
         e.setIdRegistro(idRegistro);
         e.setDetalle(detalle);
+        e.setResultado(resultado);
         e.setFecha(LocalDateTime.now());
         almacen.bitacora.add(e);
     }
@@ -81,6 +82,7 @@ public class BitacoraDAODemo extends BitacoraDAO {
         e.setIdRegistro(original.getIdRegistro());
         e.setFecha(original.getFecha());
         e.setDetalle(original.getDetalle());
+        e.setResultado(original.getResultado());
         return e;
     }
 }

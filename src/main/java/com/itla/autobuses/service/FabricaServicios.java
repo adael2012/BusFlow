@@ -17,6 +17,7 @@ import com.itla.autobuses.demo.RutaDAODemo;
 import com.itla.autobuses.demo.UsuarioDAODemo;
 import com.itla.autobuses.util.ConexionDB;
 
+import java.sql.SQLException;
 import java.util.Arrays;
 
 public final class FabricaServicios {
@@ -134,6 +135,7 @@ public final class FabricaServicios {
         UsuarioService servicioUsuarios = new UsuarioService(usuarioDAO, rolDAO);
         servicioUsuarios.crearAdminInicialSiNoExiste();
         servicioUsuarios.crearUsuarioNormalSiNoExiste();
+        servicioUsuarios.crearSuperAdminInicialSiNoExiste();
 
         BitacoraHelper.usar(bitacoraDAO);
         auth = new AuthService(usuarioDAO);
@@ -158,9 +160,15 @@ public final class FabricaServicios {
         AsignacionDAO asignacionDAO = new AsignacionDAODemo(almacen);
         BitacoraDAO bitacoraDAO = new BitacoraDAODemo(almacen);
 
+        UsuarioService servicioUsuarios = new UsuarioService(usuarioDAO, rolDAO);
+        try {
+            servicioUsuarios.crearSuperAdminInicialSiNoExiste();
+        } catch (SQLException ignored) {
+            // El modo demostración ya incluye un superadministrador sembrado.
+        }
         BitacoraHelper.usar(bitacoraDAO);
         auth = new AuthService(usuarioDAO);
-        usuarios = new UsuarioService(usuarioDAO, rolDAO);
+        usuarios = servicioUsuarios;
         conductores = new ConductorService(conductorDAO);
         autobuses = new AutobusService(autobusDAO);
         rutas = new RutaService(rutaDAO);

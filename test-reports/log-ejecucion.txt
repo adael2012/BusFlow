@@ -3,7 +3,7 @@ Fecha: 2026-11-25
 Comandos: mvn clean package / mvn test
 
 Resultado general
-  Tests run: 78
+  Tests run: 94
   Failures: 0
   Errors: 0
   Skipped: 0
@@ -23,6 +23,7 @@ Detalle por clase
   PanelServiceTest                2  [OK]
   PerfilUsuarioNormalTest         3  [OK]
   RutaServiceTest                 6  [OK]
+  SeguridadAvanzadaTest          16  [OK]
   SeguridadTest                   5  [OK]
   SesionTest                      3  [OK]
   UsuarioServiceTest              6  [OK]
@@ -35,5 +36,8 @@ Cobertura funcional
   - Validaciones críticas de usuarios, conductores, autobuses, rutas y asignaciones.
   - Solapes de conductor y autobús, licencias vigentes y disponibilidad.
   - Flujos de integración entre servicios con DAO en memoria.
+  - Jerarquía SUPERADMINISTRADOR, permisos centralizados y denegaciones auditadas.
+  - Baja lógica, reactivación, último acceso y protección del último superadministrador.
+  - Paridad de jerarquía entre SQL Server, DAO en memoria y modo demostración.
 
 Nota: las pruebas no requieren SQL Server porque los servicios reciben los DAO por constructor.

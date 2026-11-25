@@ -9,6 +9,7 @@ import com.itla.autobuses.util.Sesion;
 import java.sql.SQLException;
 import java.time.Duration;
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -36,18 +37,27 @@ public class AuthService {
         verificarBloqueo(clave);
         try {
             Usuario u = usuarioDAO.obtenerPorUsername(username.trim());
-
-            if (u == null || !Seguridad.verificar(password, u.getSalt(), u.getPasswordHash())) {
-                registrarFallo(clave);
+            if (u == null) {
+                registrarFallo(clave, 0);
                 throw new NegocioException("Usuario o contraseña incorrectos.");
             }
-            if (!u.isActivo()) {
-                registrarFallo(clave);
+            if (!u.isActivo() || u.isEliminado() || "Eliminado".equalsIgnoreCase(u.getEstadoCuenta())) {
+                BitacoraHelper.registrar(u.getId(), "LOGIN_DENEGADO", "Usuario", u.getId(),
+                        "Intento de acceso con cuenta desactivada.", "DENEGADO");
+                registrarFallo(clave, u.getId());
                 throw new NegocioException("Este usuario está desactivado.");
             }
+            if (!Seguridad.verificar(password, u.getSalt(), u.getPasswordHash())) {
+                BitacoraHelper.registrar(u.getId(), "LOGIN_FALLIDO", "Usuario", u.getId(),
+                        "Contraseña incorrecta.", "FALLIDO");
+                registrarFallo(clave, u.getId());
+                throw new NegocioException("Usuario o contraseña incorrectos.");
+            }
             INTENTOS.remove(clave);
+            usuarioDAO.registrarAcceso(u.getId());
+            u.setUltimoAcceso(LocalDateTime.now());
             Sesion.getInstancia().iniciar(u);
-            BitacoraHelper.registrar("LOGIN", "Usuario", u.getId(), "Inicio de sesión");
+            BitacoraHelper.registrar("LOGIN", "Usuario", u.getId(), "Inicio de sesión", "ÉXITO");
             return u;
         } catch (SQLException e) {
             throw new NegocioException("Error al acceder a la base de datos: " + e.getMessage(), e);
@@ -70,11 +80,13 @@ public class AuthService {
         INTENTOS.remove(clave);
     }
 
-    private static synchronized void registrarFallo(String clave) throws NegocioException {
+    private static synchronized void registrarFallo(String clave, int idUsuario) throws NegocioException {
         Registro r = INTENTOS.computeIfAbsent(clave, k -> new Registro());
         r.intentos++;
         if (r.intentos >= MAX_INTENTOS) {
             r.bloqueadoHasta = Instant.now().plus(TIEMPO_BLOQUEO);
+            BitacoraHelper.registrar(idUsuario, "BLOQUEO", "Usuario", idUsuario,
+                    "Cuenta bloqueada por tres intentos fallidos.", "DENEGADO");
             throw new NegocioException("Cuenta bloqueada por 5 minutos por intentos fallidos.");
         }
     }
@@ -87,7 +99,8 @@ public class AuthService {
     public void logout() {
         Sesion s = Sesion.getInstancia();
         if (s.hayUsuario()) {
-            BitacoraHelper.registrar("LOGOUT", "Usuario", s.getUsuario().getId(), "Cierre de sesión");
+            BitacoraHelper.registrar("LOGOUT", "Usuario", s.getUsuario().getId(),
+                    "Cierre de sesión", "ÉXITO");
         }
         s.cerrar();
     }

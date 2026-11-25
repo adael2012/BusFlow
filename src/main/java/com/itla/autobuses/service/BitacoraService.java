@@ -35,8 +35,6 @@ public class BitacoraService {
     }
 
     private void exigirAdmin() throws NegocioException {
-        if (!Sesion.getInstancia().esAdmin()) {
-            throw new NegocioException("Solo el Administrador puede consultar la bitácora.");
-        }
+        Permisos.exigir(Permisos.Permiso.CONSULTAR_BITACORA);
     }
 }

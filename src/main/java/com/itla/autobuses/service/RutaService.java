@@ -122,8 +122,6 @@ public class RutaService {
     }
 
     private void exigirAdmin() throws NegocioException {
-        if (!Sesion.getInstancia().esAdmin()) {
-            throw new NegocioException("Solo el Administrador puede realizar esta acción.");
-        }
+        Permisos.exigir(Permisos.Permiso.GESTIONAR_OPERACION);
     }
 }

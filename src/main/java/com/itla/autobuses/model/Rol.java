@@ -1,6 +1,7 @@
 package com.itla.autobuses.model;
 
 public class Rol {
+    public static final String SUPERADMINISTRADOR = "SUPERADMINISTRADOR";
     public static final String ADMINISTRADOR = "Administrador";
     public static final String USUARIO_GENERICO = "Usuario Genérico";
 

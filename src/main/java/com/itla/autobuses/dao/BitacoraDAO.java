@@ -17,13 +17,20 @@ public class BitacoraDAO {
 
     public void insertar(int idUsuario, String accion, String tabla,
                          int idRegistro, String detalle) throws SQLException {
+        insertar(idUsuario, accion, tabla, idRegistro, detalle, "ÉXITO");
+    }
+
+    public void insertar(int idUsuario, String accion, String tabla,
+                         int idRegistro, String detalle, String resultado) throws SQLException {
         try (Connection c = ConexionDB.getInstancia().getConexion();
-             CallableStatement cs = ConexionDB.getInstancia().preparar(c, "{call sp_Bitacora_Insertar(?,?,?,?,?)}")) {
+             CallableStatement cs = ConexionDB.getInstancia().preparar(c,
+                     "{call sp_Bitacora_InsertarSeguro(?,?,?,?,?,?)}")) {
             cs.setInt(1, idUsuario);
             cs.setString(2, accion);
             cs.setString(3, tabla);
             cs.setInt(4, idRegistro);
             cs.setString(5, detalle);
+            cs.setString(6, resultado);
             cs.execute();
         }
     }
@@ -60,6 +67,7 @@ public class BitacoraDAO {
         Timestamp fecha = rs.getTimestamp("Fecha");
         e.setFecha(fecha == null ? null : fecha.toLocalDateTime());
         e.setDetalle(rs.getString("Detalle"));
+        e.setResultado(rs.getString("Resultado"));
         return e;
     }
 }

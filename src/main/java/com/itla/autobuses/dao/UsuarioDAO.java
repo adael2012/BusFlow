@@ -7,6 +7,8 @@ import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -77,7 +79,31 @@ public class UsuarioDAO {
 
     public void desactivar(int idUsuario) throws SQLException {
         try (Connection c = ConexionDB.getInstancia().getConexion();
+             CallableStatement cs = ConexionDB.getInstancia().preparar(c, "{call sp_Usuario_Desactivar(?)}")) {
+            cs.setInt(1, idUsuario);
+            cs.execute();
+        }
+    }
+
+    public void eliminar(int idUsuario) throws SQLException {
+        try (Connection c = ConexionDB.getInstancia().getConexion();
              CallableStatement cs = ConexionDB.getInstancia().preparar(c, "{call sp_Usuario_Eliminar(?)}")) {
+            cs.setInt(1, idUsuario);
+            cs.execute();
+        }
+    }
+
+    public void reactivar(int idUsuario) throws SQLException {
+        try (Connection c = ConexionDB.getInstancia().getConexion();
+             CallableStatement cs = ConexionDB.getInstancia().preparar(c, "{call sp_Usuario_Reactivar(?)}")) {
+            cs.setInt(1, idUsuario);
+            cs.execute();
+        }
+    }
+
+    public void registrarAcceso(int idUsuario) throws SQLException {
+        try (Connection c = ConexionDB.getInstancia().getConexion();
+             CallableStatement cs = ConexionDB.getInstancia().preparar(c, "{call sp_Usuario_RegistrarAcceso(?)}")) {
             cs.setInt(1, idUsuario);
             cs.execute();
         }
@@ -92,6 +118,17 @@ public class UsuarioDAO {
         u.setIdRol(rs.getInt("IdRol"));
         u.setRolNombre(rs.getString("RolNombre"));
         u.setActivo(rs.getBoolean("Activo"));
+        u.setEstadoCuenta(rs.getString("EstadoCuenta"));
+        u.setFechaCreacion(fecha(rs, "FechaCreacion"));
+        u.setFechaModificacion(fecha(rs, "FechaModificacion"));
+        u.setUltimoAcceso(fecha(rs, "UltimoAcceso"));
+        u.setEliminado(rs.getBoolean("Eliminado"));
+        u.setFechaEliminacion(fecha(rs, "FechaEliminacion"));
         return u;
+    }
+
+    private LocalDateTime fecha(ResultSet rs, String columna) throws SQLException {
+        Timestamp valor = rs.getTimestamp(columna);
+        return valor == null ? null : valor.toLocalDateTime();
     }
 }

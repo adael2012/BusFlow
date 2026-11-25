@@ -9,6 +9,9 @@ class RolDAOFalso extends RolDAO {
 
     @Override
     public List<Rol> listar() {
-        return List.of(new Rol(1, "Administrador"), new Rol(2, "Usuario Genérico"));
+        return List.of(
+                new Rol(1, Rol.ADMINISTRADOR),
+                new Rol(2, Rol.USUARIO_GENERICO),
+                new Rol(3, Rol.SUPERADMINISTRADOR));
     }
 }

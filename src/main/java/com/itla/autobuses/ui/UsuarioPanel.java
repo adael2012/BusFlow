@@ -1,11 +1,13 @@
 package com.itla.autobuses.ui;
 
-import com.itla.autobuses.service.FabricaServicios;
-
 import com.itla.autobuses.model.Rol;
 import com.itla.autobuses.model.Usuario;
+import com.itla.autobuses.service.FabricaServicios;
+import com.itla.autobuses.service.Permisos;
 import com.itla.autobuses.service.UsuarioService;
 import com.itla.autobuses.util.NegocioException;
+import com.itla.autobuses.util.Roles;
+import com.itla.autobuses.util.Sesion;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -15,130 +17,390 @@ import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JPasswordField;
+import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableModel;
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Frame;
 import java.awt.GridLayout;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 public class UsuarioPanel extends JPanel {
 
-    private final UsuarioService servicio = FabricaServicios.usuarios();
-    private List<Usuario> datos = new ArrayList<>();
-    private Usuario actual;
+    private static final DateTimeFormatter FECHA = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 
-    private final JTextField txtBuscar = Tema.campo("Escribe para buscar");
+    private final UsuarioService servicio = FabricaServicios.usuarios();
+    private final List<Rol> roles = new ArrayList<>();
+    private List<Usuario> datos = new ArrayList<>();
+    private List<Usuario> visibles = new ArrayList<>();
+    private Usuario actual;
+    private boolean modoSuper;
+
+    private final JTextField txtBuscar = Tema.campo("Usuario, rol o estado");
+    private final JComboBox<String> cmbEstado = new JComboBox<>(
+            new String[]{"Todos", "Activo", "Inactivo", "Bloqueado", "Eliminado"});
+    private final JComboBox<String> cmbRolFiltro = new JComboBox<>();
+    private final JComboBox<String> cmbOrden = new JComboBox<>(new String[]{
+            "Usuario (A-Z)", "Usuario (Z-A)", "Rol", "Estado", "Fecha de creación", "Último acceso"});
+
     private final JTextField txtUsername = Tema.campo("Nombre de usuario");
-    private final javax.swing.JPasswordField txtClave = Tema.clave("Mínimo 8 caracteres");
-    private final JComboBox<Rol> cmbRol = new JComboBox<>();
+    private final JPasswordField txtClave = Tema.clave("Mínimo 8 caracteres");
+    private final JComboBox<Rol> cmbRolForm = new JComboBox<>();
     private final JCheckBox chkActivo = new JCheckBox("Activo", true);
 
     private final DefaultTableModel modelo = new DefaultTableModel(
-            new String[]{"Id", "Usuario", "Rol", "Estado"}, 0) {
-        @Override public boolean isCellEditable(int r, int c) { return false; }
+            new String[]{"Usuario", "Rol", "Estado", "Fecha creación", "Último acceso", "Acciones"}, 0) {
+        @Override public boolean isCellEditable(int fila, int columna) { return false; }
     };
-    private final javax.swing.JTable tabla = Tema.tabla(modelo);
+    private final JTable tabla = Tema.tabla(modelo);
 
+    private final JPanel tarjetas = new JPanel(new GridLayout(1, 5, 10, 10));
     private JDialog dialogo;
+    private JButton btnNuevo;
+    private JButton btnNuevoSuper;
     private JButton btnRestablecer;
     private JButton btnDesactivar;
+    private JButton btnEliminar;
+    private JButton btnReactivar;
+    private JButton btnGuardar;
 
     public UsuarioPanel() {
-        setLayout(new BorderLayout(8, 8));
+        setLayout(new BorderLayout(10, 10));
         setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         setBackground(Tema.FONDO);
 
-        JPanel filtros = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 4));
-        filtros.setBackground(Tema.FONDO);
-        JButton btnNuevo = Tema.boton("Crear usuario", Iconos.de("nuevo", Color.WHITE));
-        btnNuevo.addActionListener(e -> abrirDialogo(true));
-        filtros.add(btnNuevo);
-        filtros.add(Tema.separador());
-        filtros.add(txtBuscar);
-        JButton btnBuscar = Tema.botonSecundario("Buscar", Iconos.de("buscar", Tema.VERDE));
-        filtros.add(btnBuscar);
-        add(Tema.contenidoSuperior("Usuarios",
-                "Administra cuentas, roles y estados de acceso.", filtros), BorderLayout.NORTH);
+        tarjetas.setBackground(Tema.FONDO);
+        JPanel superior = new JPanel(new BorderLayout(0, 10));
+        superior.setBackground(Tema.FONDO);
+        superior.add(tarjetas, BorderLayout.NORTH);
+        superior.add(Tema.contenidoSuperior("Usuarios",
+                "Administra cuentas, roles, estados de acceso y bajas lógicas.", filtros()),
+                BorderLayout.SOUTH);
+        add(superior, BorderLayout.NORTH);
+        add(Tema.scroll(tabla), BorderLayout.CENTER);
 
         tabla.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
-        tabla.addMouseListener(new MouseAdapter() {
+        tabla.addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
-            public void mouseClicked(MouseEvent e) {
+            public void mouseClicked(java.awt.event.MouseEvent e) {
                 if (e.getClickCount() == 2) {
-                    abrirDialogo(false);
+                    int fila = tabla.rowAtPoint(e.getPoint());
+                    if (fila >= 0) {
+                        tabla.setRowSelectionInterval(fila, fila);
+                        abrirDialogo(false, false);
+                    }
                 }
             }
         });
-        add(Tema.scroll(tabla), BorderLayout.CENTER);
-
-        btnBuscar.addActionListener(e -> cargar(txtBuscar.getText()));
-        txtBuscar.addActionListener(e -> cargar(txtBuscar.getText()));
         tabla.getSelectionModel().addListSelectionListener(e -> {
             if (!e.getValueIsAdjusting()) {
                 seleccionar();
             }
         });
 
+        cargarRoles();
+        Tema.aplicar(cmbEstado);
+        Tema.aplicar(cmbRolFiltro);
+        Tema.aplicar(cmbOrden);
+        Tema.aplicar(cmbRolForm);
+        cargar();
+    }
+
+    private JPanel filtros() {
+        JPanel filtros = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 4));
+        filtros.setBackground(Tema.FONDO);
+
+        btnNuevo = Tema.boton("Crear usuario", Iconos.de("nuevo", Color.WHITE));
+        btnNuevo.addActionListener(e -> abrirDialogo(true, false));
+        btnNuevoSuper = Tema.botonSecundario("Crear superadministrador",
+                Iconos.de("usuarios", Tema.VERDE));
+        btnNuevoSuper.addActionListener(e -> abrirDialogo(true, true));
+
+        JButton btnBuscar = Tema.botonSecundario("Buscar", Iconos.de("buscar", Tema.VERDE));
+        btnBuscar.addActionListener(e -> cargar());
+        JButton btnLimpiar = Tema.botonPlano("Limpiar");
+        btnLimpiar.addActionListener(e -> {
+            txtBuscar.setText("");
+            cmbEstado.setSelectedIndex(0);
+            cmbRolFiltro.setSelectedIndex(0);
+            cmbOrden.setSelectedIndex(0);
+            cargar();
+        });
+
+        filtros.add(btnNuevo);
+        filtros.add(btnNuevoSuper);
+        filtros.add(Tema.separador());
+        filtros.add(txtBuscar);
+        filtros.add(cmbEstado);
+        filtros.add(cmbRolFiltro);
+        filtros.add(cmbOrden);
+        filtros.add(btnBuscar);
+        filtros.add(btnLimpiar);
+        return filtros;
+    }
+
+    private void cargarRoles() {
         try {
-            for (Rol r : servicio.listarRoles()) {
-                cmbRol.addItem(r);
+            roles.addAll(servicio.listarRoles());
+            cmbRolFiltro.addItem("Todos los roles");
+            for (Rol r : roles) {
+                cmbRolFiltro.addItem(r.getNombre());
             }
         } catch (NegocioException ex) {
             aviso(ex.getMessage());
         }
-        Tema.aplicar(cmbRol);
-        cargar("");
     }
 
-    private void abrirDialogo(boolean nuevo) {
+    private void cargar() {
+        int nivelActor = Permisos.nivel(Sesion.getInstancia().getUsuario());
+        boolean permiteAdministrar = Permisos.tiene(Sesion.getInstancia().getUsuario(),
+                Permisos.Permiso.ADMINISTRAR_USUARIOS);
+        btnNuevo.setEnabled(permiteAdministrar);
+        btnNuevoSuper.setVisible(permiteAdministrar
+                && Permisos.tiene(Sesion.getInstancia().getUsuario(),
+                        Permisos.Permiso.CONFIGURAR_SEGURIDAD));
+
+        List<Usuario> lista;
+        try {
+            lista = new ArrayList<>(servicio.listar());
+        } catch (NegocioException ex) {
+            lista = new ArrayList<>();
+            aviso(ex.getMessage());
+        }
+        datos = lista;
+        String texto = txtBuscar.getText() == null ? "" : txtBuscar.getText().trim().toLowerCase();
+        String estado = String.valueOf(cmbEstado.getSelectedItem());
+        String rol = String.valueOf(cmbRolFiltro.getSelectedItem());
+        visibles = new ArrayList<>();
+        for (Usuario u : lista) {
+            if (!texto.isEmpty() && !coincide(u, texto)) {
+                continue;
+            }
+            if (!"Todos".equals(estado) && !estado(u).equals(estado)) {
+                continue;
+            }
+            if (!"Todos los roles".equals(rol) && !rol.equals(u.getRolNombre())) {
+                continue;
+            }
+            visibles.add(u);
+        }
+        visibles.sort(comparador());
+        modelo.setRowCount(0);
+        for (Usuario u : visibles) {
+            modelo.addRow(new Object[]{u.getUsername(), u.getRolNombre(), estado(u),
+                    fecha(u.getFechaCreacion()), fecha(u.getUltimoAcceso()), acciones(u, nivelActor)});
+        }
+        actualizarTarjetas(lista);
+        if (!visibles.isEmpty()) {
+            tabla.setRowSelectionInterval(0, 0);
+        }
+    }
+
+    private boolean coincide(Usuario u, String texto) {
+        return u.getUsername().toLowerCase().contains(texto)
+                || (u.getRolNombre() != null && u.getRolNombre().toLowerCase().contains(texto))
+                || estado(u).toLowerCase().contains(texto);
+    }
+
+    private Comparator<Usuario> comparador() {
+        String orden = String.valueOf(cmbOrden.getSelectedItem());
+        Comparator<Usuario> c;
+        if (orden.startsWith("Usuario (Z")) {
+            c = Comparator.comparing(Usuario::getUsername, String.CASE_INSENSITIVE_ORDER).reversed();
+        } else if ("Rol".equals(orden)) {
+            c = Comparator.comparing(Usuario::getRolNombre, Comparator.nullsLast(String.CASE_INSENSITIVE_ORDER));
+        } else if ("Estado".equals(orden)) {
+            c = Comparator.comparing(this::estado);
+        } else if ("Fecha de creación".equals(orden)) {
+            c = Comparator.comparing(Usuario::getFechaCreacion,
+                    Comparator.nullsLast(Comparator.reverseOrder()));
+        } else if ("Último acceso".equals(orden)) {
+            c = Comparator.comparing(Usuario::getUltimoAcceso,
+                    Comparator.nullsLast(Comparator.reverseOrder()));
+        } else {
+            c = Comparator.comparing(Usuario::getUsername, String.CASE_INSENSITIVE_ORDER);
+        }
+        return c.thenComparing(Usuario::getUsername, String.CASE_INSENSITIVE_ORDER);
+    }
+
+    private void actualizarTarjetas(List<Usuario> lista) {
+        int activos = 0;
+        int inactivos = 0;
+        int superadministradores = 0;
+        int eliminados = 0;
+        for (Usuario u : lista) {
+            if (u.isEliminado()) {
+                eliminados++;
+            } else if (u.isActivo()) {
+                activos++;
+            } else {
+                inactivos++;
+            }
+            if (Roles.esSuperadministrador(u.getRolNombre())) {
+                superadministradores++;
+            }
+        }
+        tarjetas.removeAll();
+        tarjetas.add(Tema.tarjeta("Usuarios registrados", lista.size(), "Cuentas en el sistema",
+                Iconos.de("usuarios", Tema.VERDE)));
+        tarjetas.add(Tema.tarjeta("Activos", activos, "Acceso habilitado",
+                Iconos.de("check", Tema.VERDE)));
+        tarjetas.add(Tema.tarjeta("Inactivos", inactivos, "Acceso suspendido",
+                Iconos.de("alerta", Tema.ADVERTENCIA)));
+        tarjetas.add(Tema.tarjeta("Superadministradores", superadministradores, "Jerarquía máxima",
+                Iconos.de("llave", Tema.VERDE_OSCURO)));
+        tarjetas.add(Tema.tarjeta("Bajas lógicas", eliminados, "Historial conservado",
+                Iconos.de("alerta", Tema.ERROR)));
+        tarjetas.revalidate();
+        tarjetas.repaint();
+    }
+
+    private String estado(Usuario u) {
+        if (u.isEliminado()) {
+            return "Eliminado";
+        }
+        if (!u.isActivo()) {
+            return "Inactivo";
+        }
+        return u.getEstadoCuenta() == null ? "Activo" : u.getEstadoCuenta();
+    }
+
+    private String fecha(LocalDateTime valor) {
+        return valor == null ? "—" : valor.format(FECHA);
+    }
+
+    private String acciones(Usuario u, int nivelActor) {
+        if (!Permisos.puedeGestionar(Sesion.getInstancia().getUsuario(), u)) {
+            return "Solo lectura";
+        }
+        if (u.isEliminado()) {
+            return "Reactivar";
+        }
+        if (!u.isActivo()) {
+            return "Editar · Reactivar";
+        }
+        return "Editar · Clave · Baja";
+    }
+
+    private void abrirDialogo(boolean nuevo, boolean superadministrador) {
         if (nuevo) {
             limpiar();
         }
+        modoSuper = superadministrador;
         if (dialogo == null) {
             dialogo = crearDialogo();
         }
-        dialogo.setTitle(nuevo ? "Crear usuario" : "Editar usuario");
-        boolean editable = !nuevo && actual != null;
-        txtUsername.setEnabled(!editable);
-        txtClave.setEnabled(!editable);
-        btnRestablecer.setVisible(editable);
-        btnDesactivar.setVisible(editable);
+        actualizarFormulario(nuevo);
+        dialogo.setTitle(superadministrador ? "Crear superadministrador"
+                : nuevo ? "Crear usuario" : "Editar usuario");
         dialogo.setVisible(true);
     }
 
+    private void actualizarFormulario(boolean nuevo) {
+        boolean editable = !nuevo && actual != null;
+        Usuario actor = Sesion.getInstancia().getUsuario();
+        boolean puedeGestionar = Permisos.tiene(actor, Permisos.Permiso.ADMINISTRAR_USUARIOS)
+                && (!editable || Permisos.puedeGestionar(actor, actual));
+
+        txtUsername.setText(editable ? actual.getUsername() : "");
+        txtClave.setText("");
+        chkActivo.setSelected(!editable || actual.isActivo());
+        cargarRolesFormulario(editable);
+        txtUsername.setEnabled(!editable && puedeGestionar);
+        txtClave.setEnabled(!editable && puedeGestionar);
+        chkActivo.setEnabled(editable && puedeGestionar);
+        if (btnGuardar != null) {
+            btnGuardar.setVisible(puedeGestionar);
+        }
+        if (btnRestablecer != null) {
+            btnRestablecer.setVisible(editable && puedeGestionar && actual.isActivo());
+        }
+        if (btnDesactivar != null) {
+            btnDesactivar.setVisible(editable && puedeGestionar
+                    && actual.isActivo() && !actual.isEliminado());
+        }
+        if (btnEliminar != null) {
+            btnEliminar.setVisible(editable && puedeGestionar && !actual.isEliminado());
+        }
+        if (btnReactivar != null) {
+            btnReactivar.setVisible(editable && puedeGestionar
+                    && (!actual.isActivo() || actual.isEliminado()));
+        }
+        dialogo.pack();
+    }
+
+    private void cargarRolesFormulario(boolean editable) {
+        cmbRolForm.removeAllItems();
+        int nivelActor = Permisos.nivel(Sesion.getInstancia().getUsuario());
+        if (modoSuper) {
+            for (Rol r : roles) {
+                if (Roles.esSuperadministrador(r.getNombre())) {
+                    cmbRolForm.addItem(r);
+                    break;
+                }
+            }
+            cmbRolForm.setEnabled(false);
+            return;
+        }
+        for (Rol r : roles) {
+            if (Roles.nivel(r.getNombre()) <= nivelActor) {
+                cmbRolForm.addItem(r);
+            }
+        }
+        cmbRolForm.setEnabled(!editable);
+        if (editable) {
+            for (int i = 0; i < cmbRolForm.getItemCount(); i++) {
+                if (cmbRolForm.getItemAt(i).getId() == actual.getIdRol()) {
+                    cmbRolForm.setSelectedIndex(i);
+                    break;
+                }
+            }
+        } else if (cmbRolForm.getItemCount() > 0) {
+            cmbRolForm.setSelectedIndex(0);
+        }
+    }
+
     private JDialog crearDialogo() {
-        JPanel form = new JPanel(new GridLayout(3, 2, 10, 10));
+        JPanel form = new JPanel(new GridLayout(4, 2, 10, 10));
         form.setBackground(Color.WHITE);
         form.add(etiqueta("Usuario"));
         form.add(txtUsername);
         form.add(etiqueta("Contraseña"));
         form.add(txtClave);
         form.add(etiqueta("Rol"));
-        form.add(cmbRol);
+        form.add(cmbRolForm);
+        form.add(etiqueta("Estado"));
+        form.add(chkActivo);
         form.setBorder(BorderFactory.createEmptyBorder(4, 4, 10, 4));
+        Tema.aplicar(chkActivo);
 
-        btnRestablecer = Tema.botonSecundario("Restablecer contraseña",
-                Iconos.de("llave", Tema.VERDE));
+        btnRestablecer = Tema.botonSecundario("Restablecer clave", Iconos.de("llave", Tema.VERDE));
         btnRestablecer.addActionListener(e -> restablecer());
-        btnDesactivar = Tema.botonPeligro("Desactivar", Iconos.de("alerta", Tema.ERROR));
-        btnDesactivar.addActionListener(e -> desactivar());
+        btnDesactivar = Tema.botonSecundario("Desactivar", Iconos.de("alerta", Tema.ADVERTENCIA));
+        btnDesactivar.addActionListener(e -> desactivar(false));
+        btnEliminar = Tema.botonPeligro("Eliminar", Iconos.de("alerta", Tema.ERROR));
+        btnEliminar.addActionListener(e -> desactivar(true));
+        btnReactivar = Tema.boton("Reactivar", Iconos.de("check", Color.WHITE));
+        btnReactivar.addActionListener(e -> reactivar());
         JButton btnCancelar = Tema.botonSecundario("Cancelar");
         btnCancelar.addActionListener(e -> dialogo.dispose());
-        JButton btnGuardar = Tema.boton("Guardar", Iconos.de("check", Color.WHITE));
+        btnGuardar = Tema.boton("Guardar", Iconos.de("check", Color.WHITE));
         btnGuardar.addActionListener(e -> guardar());
 
         Frame padre = (Frame) SwingUtilities.getWindowAncestor(this);
         return Tema.dialogo(padre, "Crear usuario",
-                "Define el acceso y el perfil del usuario.", form,
-                btnRestablecer, btnDesactivar, btnCancelar, btnGuardar);
+                "Define el acceso, el perfil y el estado de la cuenta.", form,
+                btnRestablecer, btnDesactivar, btnEliminar, btnReactivar, btnCancelar, btnGuardar);
     }
 
     private JLabel etiqueta(String texto) {
@@ -148,43 +410,12 @@ public class UsuarioPanel extends JPanel {
         return l;
     }
 
-    private void cargar(String texto) {
-        try {
-            datos = servicio.listar();
-            modelo.setRowCount(0);
-            String filtro = texto == null ? "" : texto.trim().toLowerCase();
-            for (Usuario u : datos) {
-                if (!filtro.isEmpty() && !u.getUsername().toLowerCase().contains(filtro)) {
-                    continue;
-                }
-                modelo.addRow(new Object[]{u.getId(), u.getUsername(), u.getRolNombre(),
-                        u.isActivo() ? "Activo" : "Inactivo"});
-            }
-        } catch (NegocioException ex) {
-            aviso(ex.getMessage());
-        }
-    }
-
     private void seleccionar() {
         int fila = tabla.getSelectedRow();
-        if (fila < 0) {
+        if (fila < 0 || fila >= visibles.size()) {
             return;
         }
-        int id = (int) modelo.getValueAt(tabla.convertRowIndexToModel(fila), 0);
-        for (Usuario u : datos) {
-            if (u.getId() == id) {
-                actual = u;
-                txtUsername.setText(u.getUsername());
-                chkActivo.setSelected(u.isActivo());
-                for (int i = 0; i < cmbRol.getItemCount(); i++) {
-                    if (cmbRol.getItemAt(i).getId() == u.getIdRol()) {
-                        cmbRol.setSelectedIndex(i);
-                        break;
-                    }
-                }
-                return;
-            }
-        }
+        actual = visibles.get(tabla.convertRowIndexToModel(fila));
     }
 
     private void limpiar() {
@@ -193,25 +424,27 @@ public class UsuarioPanel extends JPanel {
         txtUsername.setText("");
         txtClave.setText("");
         chkActivo.setSelected(true);
-        if (cmbRol.getItemCount() > 0) {
-            cmbRol.setSelectedIndex(0);
-        }
     }
 
     private void guardar() {
-        Rol rol = (Rol) cmbRol.getSelectedItem();
+        Rol rol = (Rol) cmbRolForm.getSelectedItem();
         if (rol == null) {
-            aviso("No hay roles disponibles.");
+            aviso("No hay roles disponibles para tu jerarquía.");
             return;
         }
         try {
             if (actual == null) {
-                servicio.crear(txtUsername.getText(), new String(txtClave.getPassword()), rol.getId());
+                if (modoSuper) {
+                    servicio.crearSuperadministrador(txtUsername.getText(),
+                            new String(txtClave.getPassword()));
+                } else {
+                    servicio.crear(txtUsername.getText(), new String(txtClave.getPassword()), rol.getId());
+                }
             } else {
                 servicio.actualizar(actual, rol.getId(), chkActivo.isSelected());
             }
             dialogo.dispose();
-            cargar(txtBuscar.getText());
+            cargar();
         } catch (NegocioException ex) {
             aviso(ex.getMessage());
         }
@@ -222,8 +455,8 @@ public class UsuarioPanel extends JPanel {
             aviso("Selecciona un usuario de la tabla.");
             return;
         }
-        javax.swing.JPasswordField campo = Tema.clave("Mínimo 8 caracteres");
-        int r = JOptionPane.showConfirmDialog(this, campo,
+        JPasswordField campo = Tema.clave("Mínimo 8 caracteres");
+        int r = JOptionPane.showConfirmDialog(dialogo, campo,
                 "Nueva contraseña para " + actual.getUsername(),
                 JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
         if (r != JOptionPane.OK_OPTION) {
@@ -231,33 +464,62 @@ public class UsuarioPanel extends JPanel {
         }
         try {
             servicio.restablecerPassword(actual, new String(campo.getPassword()));
-            JOptionPane.showMessageDialog(this, "Contraseña restablecida.");
+            JOptionPane.showMessageDialog(dialogo, "Contraseña restablecida.");
+            cargar();
         } catch (NegocioException ex) {
             aviso(ex.getMessage());
         }
     }
 
-    private void desactivar() {
+    private void desactivar(boolean eliminar) {
         if (actual == null) {
             aviso("Selecciona un usuario de la tabla.");
             return;
         }
-        int r = JOptionPane.showConfirmDialog(this,
-                "Desactivar al usuario " + actual.getUsername() + "?",
+        String mensaje = eliminar
+                ? "¿Eliminar al usuario " + actual.getUsername()
+                        + "?\nLa cuenta quedará inactiva y conservará su historial en la bitácora."
+                : "¿Desactivar al usuario " + actual.getUsername() + "?";
+        int r = JOptionPane.showConfirmDialog(dialogo, mensaje, "Confirmar",
+                JOptionPane.YES_NO_OPTION, eliminar
+                        ? JOptionPane.WARNING_MESSAGE : JOptionPane.QUESTION_MESSAGE);
+        if (r != JOptionPane.YES_OPTION) {
+            return;
+        }
+        try {
+            if (eliminar) {
+                servicio.eliminar(actual);
+            } else {
+                servicio.desactivar(actual);
+            }
+            dialogo.dispose();
+            cargar();
+        } catch (NegocioException ex) {
+            aviso(ex.getMessage());
+        }
+    }
+
+    private void reactivar() {
+        if (actual == null) {
+            aviso("Selecciona un usuario de la tabla.");
+            return;
+        }
+        int r = JOptionPane.showConfirmDialog(dialogo,
+                "¿Reactivar la cuenta de " + actual.getUsername() + "?",
                 "Confirmar", JOptionPane.YES_NO_OPTION);
         if (r != JOptionPane.YES_OPTION) {
             return;
         }
         try {
-            servicio.desactivar(actual);
+            servicio.reactivar(actual);
             dialogo.dispose();
-            cargar(txtBuscar.getText());
+            cargar();
         } catch (NegocioException ex) {
             aviso(ex.getMessage());
         }
     }
 
-    private void aviso(String msg) {
-        JOptionPane.showMessageDialog(this, msg, "Aviso", JOptionPane.WARNING_MESSAGE);
+    private void aviso(String mensaje) {
+        JOptionPane.showMessageDialog(this, mensaje, "Aviso", JOptionPane.WARNING_MESSAGE);
     }
 }

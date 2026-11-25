@@ -4,6 +4,7 @@ import com.itla.autobuses.dao.UsuarioDAO;
 import com.itla.autobuses.model.Usuario;
 
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -52,6 +53,10 @@ public class UsuarioDAODemo extends UsuarioDAO {
             if (u.getId() == idUsuario) {
                 u.setIdRol(idRol);
                 u.setActivo(activo);
+                u.setEliminado(false);
+                u.setFechaEliminacion(null);
+                u.setEstadoCuenta(activo ? "Activo" : "Inactivo");
+                u.setFechaModificacion(LocalDateTime.now());
                 almacen.aplicarRol(u);
                 return;
             }
@@ -64,6 +69,7 @@ public class UsuarioDAODemo extends UsuarioDAO {
             if (u.getId() == idUsuario) {
                 u.setPasswordHash(hash);
                 u.setSalt(salt);
+                u.setFechaModificacion(LocalDateTime.now());
                 return;
             }
         }
@@ -74,6 +80,46 @@ public class UsuarioDAODemo extends UsuarioDAO {
         for (Usuario u : almacen.usuarios) {
             if (u.getId() == idUsuario) {
                 u.setActivo(false);
+                u.setEstadoCuenta("Inactivo");
+                u.setFechaModificacion(LocalDateTime.now());
+                return;
+            }
+        }
+    }
+
+    @Override
+    public void eliminar(int idUsuario) {
+        for (Usuario u : almacen.usuarios) {
+            if (u.getId() == idUsuario) {
+                u.setActivo(false);
+                u.setEliminado(true);
+                u.setEstadoCuenta("Eliminado");
+                u.setFechaEliminacion(LocalDateTime.now());
+                u.setFechaModificacion(LocalDateTime.now());
+                return;
+            }
+        }
+    }
+
+    @Override
+    public void reactivar(int idUsuario) {
+        for (Usuario u : almacen.usuarios) {
+            if (u.getId() == idUsuario) {
+                u.setActivo(true);
+                u.setEliminado(false);
+                u.setEstadoCuenta("Activo");
+                u.setFechaEliminacion(null);
+                u.setFechaModificacion(LocalDateTime.now());
+                return;
+            }
+        }
+    }
+
+    @Override
+    public void registrarAcceso(int idUsuario) {
+        for (Usuario u : almacen.usuarios) {
+            if (u.getId() == idUsuario) {
+                u.setUltimoAcceso(LocalDateTime.now());
                 return;
             }
         }
@@ -88,6 +134,12 @@ public class UsuarioDAODemo extends UsuarioDAO {
         u.setIdRol(original.getIdRol());
         u.setRolNombre(original.getRolNombre());
         u.setActivo(original.isActivo());
+        u.setEstadoCuenta(original.getEstadoCuenta());
+        u.setFechaCreacion(original.getFechaCreacion());
+        u.setFechaModificacion(original.getFechaModificacion());
+        u.setUltimoAcceso(original.getUltimoAcceso());
+        u.setEliminado(original.isEliminado());
+        u.setFechaEliminacion(original.getFechaEliminacion());
         return u;
     }
 }

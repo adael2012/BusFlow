@@ -125,13 +125,17 @@ public final class DemoAlmacen {
     private void sembrar() {
         Rol admin = new Rol(siguienteRol(), Rol.ADMINISTRADOR);
         Rol generico = new Rol(siguienteRol(), Rol.USUARIO_GENERICO);
+        Rol superadmin = new Rol(siguienteRol(), Rol.SUPERADMINISTRADOR);
         roles.add(admin);
         roles.add(generico);
+        roles.add(superadmin);
 
         usuarios.add(crearUsuario(UsuarioService.ADMIN_INICIAL,
                 UsuarioService.CLAVE_INICIAL, admin.getId()));
         usuarios.add(crearUsuario(UsuarioService.USUARIO_NORMAL_INICIAL,
                 UsuarioService.CLAVE_NORMAL_INICIAL, generico.getId()));
+        usuarios.add(crearUsuario(UsuarioService.SUPERADMIN_INICIAL_DEMO,
+                UsuarioService.CLAVE_SUPERADMIN_DEMO, superadmin.getId()));
 
         LocalDate hoy = LocalDate.now();
         conductores.add(crearConductor("00112345671", "Juan", "Pérez",
@@ -177,6 +181,9 @@ public final class DemoAlmacen {
         u.setPasswordHash(Seguridad.hash(password, u.getSalt()));
         u.setIdRol(idRol);
         u.setActivo(true);
+        u.setEstadoCuenta("Activo");
+        u.setFechaCreacion(LocalDateTime.now().minusDays(1));
+        u.setFechaModificacion(u.getFechaCreacion());
         aplicarRol(u);
         return u;
     }
@@ -248,6 +255,7 @@ public final class DemoAlmacen {
         e.setTabla(tabla);
         e.setIdRegistro(idRegistro);
         e.setDetalle(detalle);
+        e.setResultado("ÉXITO");
         e.setFecha(fecha);
         return e;
     }

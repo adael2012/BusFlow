@@ -87,7 +87,8 @@ public class MainFrame extends JFrame {
         nav.setOpaque(false);
 
         seccion(nav, "GENERAL");
-        agregarItem(nav, "inicio", "Inicio", "inicio", "Panel de administración");
+        agregarItem(nav, "inicio", "Inicio", "inicio",
+                u.esAdmin() ? "Panel de administración" : "Panel de consulta");
         agregarItem(nav, "conductores", "Conductores", "conductores", "Administra y consulta los registros del sistema");
         agregarItem(nav, "autobuses", "Autobuses", "autobuses", "Administra y consulta la flota de unidades");
         agregarItem(nav, "rutas", "Rutas", "rutas", "Administra y consulta los recorridos");

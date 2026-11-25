@@ -14,12 +14,25 @@ final class BitacoraHelper {
     }
 
     static void registrar(String accion, String tabla, int idRegistro, String detalle) {
-        if (!Sesion.getInstancia().hayUsuario()) {
+        registrar(accion, tabla, idRegistro, detalle, "ÉXITO");
+    }
+
+    static void registrar(String accion, String tabla, int idRegistro,
+                          String detalle, String resultado) {
+        Sesion sesion = Sesion.getInstancia();
+        if (!sesion.hayUsuario()) {
+            return;
+        }
+        registrar(sesion.getUsuario().getId(), accion, tabla, idRegistro, detalle, resultado);
+    }
+
+    static void registrar(int idActor, String accion, String tabla, int idRegistro,
+                          String detalle, String resultado) {
+        if (idActor <= 0) {
             return;
         }
         try {
-            dao.insertar(Sesion.getInstancia().getUsuario().getId(),
-                    accion, tabla, idRegistro, detalle);
+            dao.insertar(idActor, accion, tabla, idRegistro, detalle, resultado);
         } catch (Exception ignored) {
 
         }

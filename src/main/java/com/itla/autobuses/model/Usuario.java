@@ -1,5 +1,9 @@
 package com.itla.autobuses.model;
 
+import com.itla.autobuses.util.Roles;
+
+import java.time.LocalDateTime;
+
 public class Usuario {
     private int id;
     private String username;
@@ -8,6 +12,12 @@ public class Usuario {
     private int idRol;
     private String rolNombre;
     private boolean activo = true;
+    private String estadoCuenta = "Activo";
+    private LocalDateTime fechaCreacion;
+    private LocalDateTime fechaModificacion;
+    private LocalDateTime ultimoAcceso;
+    private boolean eliminado;
+    private LocalDateTime fechaEliminacion;
 
     public int getId() { return id; }
     public void setId(int id) { this.id = id; }
@@ -23,6 +33,19 @@ public class Usuario {
     public void setRolNombre(String rolNombre) { this.rolNombre = rolNombre; }
     public boolean isActivo() { return activo; }
     public void setActivo(boolean activo) { this.activo = activo; }
+    public String getEstadoCuenta() { return estadoCuenta; }
+    public void setEstadoCuenta(String estadoCuenta) { this.estadoCuenta = estadoCuenta; }
+    public LocalDateTime getFechaCreacion() { return fechaCreacion; }
+    public void setFechaCreacion(LocalDateTime fechaCreacion) { this.fechaCreacion = fechaCreacion; }
+    public LocalDateTime getFechaModificacion() { return fechaModificacion; }
+    public void setFechaModificacion(LocalDateTime fechaModificacion) { this.fechaModificacion = fechaModificacion; }
+    public LocalDateTime getUltimoAcceso() { return ultimoAcceso; }
+    public void setUltimoAcceso(LocalDateTime ultimoAcceso) { this.ultimoAcceso = ultimoAcceso; }
+    public boolean isEliminado() { return eliminado; }
+    public void setEliminado(boolean eliminado) { this.eliminado = eliminado; }
+    public LocalDateTime getFechaEliminacion() { return fechaEliminacion; }
+    public void setFechaEliminacion(LocalDateTime fechaEliminacion) { this.fechaEliminacion = fechaEliminacion; }
 
-    public boolean esAdmin() { return Rol.ADMINISTRADOR.equals(rolNombre); }
+    public boolean esAdmin() { return Roles.esAdministrador(rolNombre); }
+    public boolean esSuperadministrador() { return Roles.esSuperadministrador(rolNombre); }
 }
