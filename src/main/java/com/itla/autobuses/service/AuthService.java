@@ -68,6 +68,16 @@ public class AuthService {
         INTENTOS.clear();
     }
 
+    /** Indica si la cuenta está bloqueada actualmente por intentos fallidos. */
+    public static synchronized boolean estaBloqueado(String username) {
+        if (username == null || username.isBlank()) {
+            return false;
+        }
+        Registro r = INTENTOS.get(username.trim().toLowerCase());
+        return r != null && r.bloqueadoHasta != null
+                && Instant.now().isBefore(r.bloqueadoHasta);
+    }
+
     private static synchronized void verificarBloqueo(String clave) throws NegocioException {
         Registro r = INTENTOS.get(clave);
         if (r == null || r.bloqueadoHasta == null) {

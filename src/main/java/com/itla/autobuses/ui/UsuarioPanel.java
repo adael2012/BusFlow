@@ -2,6 +2,7 @@ package com.itla.autobuses.ui;
 
 import com.itla.autobuses.model.Rol;
 import com.itla.autobuses.model.Usuario;
+import com.itla.autobuses.service.AuthService;
 import com.itla.autobuses.service.FabricaServicios;
 import com.itla.autobuses.service.Permisos;
 import com.itla.autobuses.service.UsuarioService;
@@ -21,6 +22,8 @@ import javax.swing.JPasswordField;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableModel;
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -45,6 +48,7 @@ public class UsuarioPanel extends JPanel {
     private List<Usuario> visibles = new ArrayList<>();
     private Usuario actual;
     private boolean modoSuper;
+    private boolean actualizandoFiltros;
 
     private final JTextField txtBuscar = Tema.campo("Usuario, rol o estado");
     private final JComboBox<String> cmbEstado = new JComboBox<>(
@@ -113,6 +117,15 @@ public class UsuarioPanel extends JPanel {
         Tema.aplicar(cmbRolFiltro);
         Tema.aplicar(cmbOrden);
         Tema.aplicar(cmbRolForm);
+
+        cmbEstado.addActionListener(e -> aplicarFiltros());
+        cmbRolFiltro.addActionListener(e -> aplicarFiltros());
+        cmbOrden.addActionListener(e -> aplicarFiltros());
+        txtBuscar.getDocument().addDocumentListener(new DocumentListener() {
+            @Override public void insertUpdate(DocumentEvent e) { aplicarFiltros(); }
+            @Override public void removeUpdate(DocumentEvent e) { aplicarFiltros(); }
+            @Override public void changedUpdate(DocumentEvent e) { aplicarFiltros(); }
+        });
         cargar();
     }
 
@@ -134,7 +147,7 @@ public class UsuarioPanel extends JPanel {
             cmbEstado.setSelectedIndex(0);
             cmbRolFiltro.setSelectedIndex(0);
             cmbOrden.setSelectedIndex(0);
-            cargar();
+            aplicarFiltros();
         });
 
         filtros.add(btnNuevo);
@@ -178,31 +191,51 @@ public class UsuarioPanel extends JPanel {
             aviso(ex.getMessage());
         }
         datos = lista;
-        String texto = txtBuscar.getText() == null ? "" : txtBuscar.getText().trim().toLowerCase();
-        String estado = String.valueOf(cmbEstado.getSelectedItem());
-        String rol = String.valueOf(cmbRolFiltro.getSelectedItem());
-        visibles = new ArrayList<>();
-        for (Usuario u : lista) {
-            if (!texto.isEmpty() && !coincide(u, texto)) {
-                continue;
-            }
-            if (!"Todos".equals(estado) && !estado(u).equals(estado)) {
-                continue;
-            }
-            if (!"Todos los roles".equals(rol) && !rol.equals(u.getRolNombre())) {
-                continue;
-            }
-            visibles.add(u);
+        aplicarFiltros();
+    }
+
+    /** Filtra sobre la lista ya cargada; no consulta la BD en cada tecla o cambio de combo. */
+    private void aplicarFiltros() {
+        if (actualizandoFiltros) {
+            return;
         }
-        visibles.sort(comparador());
-        modelo.setRowCount(0);
-        for (Usuario u : visibles) {
-            modelo.addRow(new Object[]{u.getUsername(), u.getRolNombre(), estado(u),
-                    fecha(u.getFechaCreacion()), fecha(u.getUltimoAcceso()), acciones(u, nivelActor)});
-        }
-        actualizarTarjetas(lista);
-        if (!visibles.isEmpty()) {
-            tabla.setRowSelectionInterval(0, 0);
+        actualizandoFiltros = true;
+        try {
+            int nivelActor = Permisos.nivel(Sesion.getInstancia().getUsuario());
+            String texto = txtBuscar.getText() == null ? "" : txtBuscar.getText().trim().toLowerCase();
+            Object valorEstado = cmbEstado.getSelectedItem();
+            String estadoFiltro = valorEstado == null ? "Todos" : String.valueOf(valorEstado);
+            Object valorRol = cmbRolFiltro.getSelectedItem();
+            String rolFiltro = valorRol == null ? "Todos los roles" : String.valueOf(valorRol);
+
+            visibles = new ArrayList<>();
+            for (Usuario u : datos) {
+                if (!texto.isEmpty() && !coincide(u, texto)) {
+                    continue;
+                }
+                if (!"Todos".equals(estadoFiltro) && !estado(u).equals(estadoFiltro)) {
+                    continue;
+                }
+                if (!"Todos los roles".equals(rolFiltro) && !rolFiltro.equals(u.getRolNombre())) {
+                    continue;
+                }
+                visibles.add(u);
+            }
+            visibles.sort(comparador());
+            modelo.setRowCount(0);
+            for (Usuario u : visibles) {
+                modelo.addRow(new Object[]{u.getUsername(), u.getRolNombre(), estado(u),
+                        fecha(u.getFechaCreacion()), fecha(u.getUltimoAcceso()), acciones(u, nivelActor)});
+            }
+            actualizarTarjetas(datos);
+            if (!visibles.isEmpty()) {
+                tabla.setRowSelectionInterval(0, 0);
+            } else {
+                tabla.clearSelection();
+                actual = null;
+            }
+        } finally {
+            actualizandoFiltros = false;
         }
     }
 
@@ -271,6 +304,9 @@ public class UsuarioPanel extends JPanel {
         }
         if (!u.isActivo()) {
             return "Inactivo";
+        }
+        if (AuthService.estaBloqueado(u.getUsername())) {
+            return "Bloqueado";
         }
         return u.getEstadoCuenta() == null ? "Activo" : u.getEstadoCuenta();
     }
