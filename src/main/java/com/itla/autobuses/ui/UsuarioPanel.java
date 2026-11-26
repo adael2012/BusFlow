@@ -36,7 +36,9 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 public class UsuarioPanel extends JPanel {
 
@@ -164,7 +166,17 @@ public class UsuarioPanel extends JPanel {
 
     private void cargarRoles() {
         try {
-            roles.addAll(servicio.listarRoles());
+            /* Unifica variantes (Usuario Generico / Usuario Genérico) y prefiere la canónica. */
+            Map<String, Rol> unicos = new LinkedHashMap<>();
+            for (Rol r : servicio.listarRoles()) {
+                String clave = Roles.normalizar(r.getNombre());
+                Rol previo = unicos.get(clave);
+                if (previo == null || (Rol.USUARIO_GENERICO.equals(r.getNombre())
+                        && !Rol.USUARIO_GENERICO.equals(previo.getNombre()))) {
+                    unicos.put(clave, r);
+                }
+            }
+            roles.addAll(unicos.values());
             cmbRolFiltro.addItem("Todos los roles");
             for (Rol r : roles) {
                 cmbRolFiltro.addItem(r.getNombre());

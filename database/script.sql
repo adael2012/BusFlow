@@ -90,11 +90,24 @@ GO
 
 IF NOT EXISTS (SELECT 1 FROM dbo.Rol WHERE Nombre = N'Administrador')
     INSERT INTO dbo.Rol (Nombre) VALUES (N'Administrador');
-IF NOT EXISTS (SELECT 1 FROM dbo.Rol WHERE Nombre = N'Usuario Genérico')
+/* Unificar "Usuario Genérico": nunca se insertan las dos variantes. */
+IF NOT EXISTS (SELECT 1 FROM dbo.Rol WHERE Nombre IN (N'Usuario Generico', N'Usuario Genérico'))
     INSERT INTO dbo.Rol (Nombre) VALUES (N'Usuario Genérico');
+GO
+/* Si solo existe la variante sin acento, se renombra (conserva IdRol y usuarios). */
 IF EXISTS (SELECT 1 FROM dbo.Rol WHERE Nombre = N'Usuario Generico')
    AND NOT EXISTS (SELECT 1 FROM dbo.Rol WHERE Nombre = N'Usuario Genérico')
     UPDATE dbo.Rol SET Nombre = N'Usuario Genérico' WHERE Nombre = N'Usuario Generico';
+GO
+/* Si existen ambas, se reasignan los usuarios a la canónica y se elimina el duplicado. */
+IF EXISTS (SELECT 1 FROM dbo.Rol WHERE Nombre = N'Usuario Generico')
+   AND EXISTS (SELECT 1 FROM dbo.Rol WHERE Nombre = N'Usuario Genérico')
+BEGIN
+    DECLARE @RolGenericoLegacy INT = (SELECT TOP 1 IdRol FROM dbo.Rol WHERE Nombre = N'Usuario Generico');
+    DECLARE @RolGenericoCanon  INT = (SELECT TOP 1 IdRol FROM dbo.Rol WHERE Nombre = N'Usuario Genérico');
+    UPDATE dbo.Usuario SET IdRol = @RolGenericoCanon WHERE IdRol = @RolGenericoLegacy;
+    DELETE FROM dbo.Rol WHERE IdRol = @RolGenericoLegacy;
+END
 GO
 
 /* -------------------------------------------------------------------------

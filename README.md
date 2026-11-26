@@ -192,6 +192,8 @@ Cámbiala desde **Cambiar contraseña** en la barra superior. Si cambias la cont
 
 `database/script.sql` puede ejecutarse las veces que sea necesario sobre una base ya creada: agrega columnas y el rol `SUPERADMINISTRADOR` solo si faltan, usa `CREATE OR ALTER PROCEDURE`, no elimina tablas ni datos y conserva los 36 procedimientos originales. Los 4 procedimientos nuevos son `sp_Usuario_Desactivar`, `sp_Usuario_Reactivar`, `sp_Usuario_RegistrarAcceso` y `sp_Bitacora_InsertarSeguro`. Las columnas nuevas son `Usuario.EstadoCuenta`, `Usuario.FechaModificacion`, `Usuario.UltimoAcceso`, `Usuario.Eliminado`, `Usuario.FechaEliminacion` y `Bitacora.Resultado`.
 
+La migración también unifica las dos variantes heredadas `Usuario Generico` y `Usuario Genérico` en una sola (`Usuario Genérico`): reasigna los usuarios al rol canónico y elimina el rol duplicado sin borrar cuentas. Por eso el panel Usuarios muestra una sola opción al filtrar o crear cuentas.
+
 Para definir la cuenta real del superadministrador en el primer arranque con base de datos, establece ambas variables de entorno antes de iniciar:
 
 ```powershell
